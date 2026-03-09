@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EncryptLogin (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "EncryptLogin (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
