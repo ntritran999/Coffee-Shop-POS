@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MultiCriteriaSort (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "MultiCriteriaSort (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
