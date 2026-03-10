@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AdvancedSearch (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AdvancedSearch (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
