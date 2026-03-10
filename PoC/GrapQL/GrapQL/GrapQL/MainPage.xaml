@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="GrapQL.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GrapQL"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="12">
+        <StackPanel>
+            <Button Content="Load Bills" Command="{Binding LoadCommand}" Margin="0,0,0,8" />
+
+            <ListView ItemsSource="{Binding Bills}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical" Padding="8">
+                            <TextBlock  FontWeight="SemiBold">
+                                Bill ID: <Run Text="{Binding ID}"/>
+                            </TextBlock>
+                            <TextBlock  FontWeight="Normal">
+                                DateCheckIn: <Run Text="{Binding DateCheckIn}" />
+                            </TextBlock>
+                            <TextBlock  FontWeight="Normal">
+                                DateCheckOut: <Run Text="{Binding DateCheckOut}" />
+                            </TextBlock>
+                            <TextBlock  FontWeight="Normal">
+                                TableID: <Run Text="{Binding TableID}" />
+                            </TextBlock>
+                            <TextBlock  FontWeight="Normal">
+                                Status: <Run Text="{Binding Status}" />
+                            </TextBlock>
+                            <TextBlock  FontWeight="Normal">
+                                TotalAmount: <Run Text="{Binding TotalAmount}" />
+                            </TextBlock>
+                            <TextBlock  FontWeight="Normal">
+                                Discount: <Run Text="{Binding Discount}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</Page>
