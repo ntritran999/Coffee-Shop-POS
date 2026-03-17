@@ -1,11 +1,11 @@
 using System;
-
-namespace Client.Repositories;
-
-public interface IBillRepository : IRepo<Bill>
+using System.Collections.Generic;
+namespace Client.Repositories
 {
-    List<Bill> GetByDate(DateTime fromDate, DateTime toDate);
-    List<Bill> GetUnpaidBills();
-    Bill GetByTable(string tableId);
-    void Checkout(string billId, double totalAmount, double discount);
+    public interface IBillRepository : IRepo<Bill>
+    {
+        IEnumerable<Bill> GetByDate(DateTime fromDate, DateTime toDate);
+        IEnumerable<Bill> GetByStatus(int status);
+        Bill? GetByTable(string tableId);
+    }
 }

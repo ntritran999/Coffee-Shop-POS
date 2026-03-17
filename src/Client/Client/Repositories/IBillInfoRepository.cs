@@ -1,9 +1,10 @@
 using System;
-
-namespace Client.Repositories;
-
-public interface IBillInfoRepository : IRepo<BillInfo>
+using System.Collections.Generic;
+namespace Client.Repositories
 {
-    List<BillInfo> GetByBillId(string billId);
-    void AddItem(string billId, string productId, int count, double price, string note);
+    public interface IBillInfoRepository : IRepo<BillInfo, string>
+    {
+        IEnumerable<BillInfo> GetByBillId(string billId);
+        BillInfo? GetItem(string billId, string productId);
+    }
 }

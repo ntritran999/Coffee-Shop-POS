@@ -1,8 +1,9 @@
 using System;
-
-namespace Client.Repositories;
-
-public interface ICategoryRepository : IRepo<Category>
+using System.Collections.Generic;
+namespace Client.Repositories
 {
-    Category GetByName(string categoryName);
+    public interface ICategoryRepository : IRepo<Category>
+    {
+        Category? GetByName(string categoryName);
+    }
 }

@@ -1,8 +1,10 @@
 using System;
-
-namespace Client.Repositories;
-
-public interface ITableRepository : IRepo<Table>
+using System.Collections.Generic;
+namespace Client.Repositories
 {
-    List<Table> GetByStatus(int status);
+    public interface ITableRepository : IRepo<Table>
+    {
+        IEnumerable<Table> GetByStatus(int status);
+    }
 }
+
