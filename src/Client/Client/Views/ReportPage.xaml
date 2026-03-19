@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Client.Views.ReportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer Padding="30">
+        <StackPanel Spacing="25">
+
+            <Grid>
+                <TextBlock Text="Báo cáo Kinh doanh" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+                <AutoSuggestBox QueryIcon="Find" PlaceholderText="Tìm kiếm nhanh..." Width="300" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="10">
+                    <FontIcon Glyph="&#xE7E7;" FontSize="16"/>
+                    <PersonPicture ProfilePicture="ms-appx:///Assets/Admin.png" Height="32"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="Doanh thu &amp; Tài chính" 
+                        Foreground="White" 
+                        CornerRadius="20" Padding="20,8"/>
+                <Button Content="Hiệu suất Sản phẩm" Background="White" CornerRadius="20" Padding="20,8"/>
+            </StackPanel>
+
+            <Grid ColumnSpacing="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="20" >
+                    <StackPanel>
+                        <TextBlock Text="TỔNG DOANH THU" Foreground="Gray" FontSize="12" FontWeight="SemiBold"/>
+                        <TextBlock Text="128.450.000đ" FontSize="22" FontWeight="Bold" Margin="0,10,0,0"/>
+                        <TextBlock Text="↗ +5.2% so với tháng trước" Foreground="#28A745" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid ColumnSpacing="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="25">
+                    <StackPanel>
+                        <Grid>
+                            <StackPanel>
+                                <TextBlock Text="Biểu đồ Doanh thu tuần này" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock Text="Thống kê chi tiết doanh thu và lợi nhuận theo ngày" Foreground="Gray" FontSize="13"/>
+                            </StackPanel>
+                            <HyperlinkButton Content="Tải báo cáo ↗"  HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Canvas Height="300" Margin="0,20,0,0">
+                        </Canvas>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="25">
+                    <StackPanel>
+                        <TextBlock Text="Cơ cấu Danh mục" FontWeight="Bold" FontSize="18"/>
+                        <TextBlock Text="Tỷ trọng doanh thu theo nhóm sản phẩm" Foreground="Gray" FontSize="13"/>
+
+                        <Grid Height="200" Margin="0,20">
+                            <Ellipse  StrokeThickness="30" Width="150" Height="150"/>
+                        </Grid>
+
+                        <ItemsControl>
+                            <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <Ellipse  Width="10" Height="10" VerticalAlignment="Center"/>
+                                <TextBlock Text="Cà phê" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="45%" HorizontalAlignment="Right" Margin="100,0,0,0" FontWeight="Bold"/>
+                            </StackPanel>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

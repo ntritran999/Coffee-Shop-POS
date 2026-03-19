@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Client.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style TargetType="NavigationViewItem">
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="Padding" Value="0,10"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style x:Key="SidebarItemContentStyle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Page.Resources>
+
+    <NavigationView
+        x:Name="navigation"
+        ItemInvoked="navigation_ItemInvoked"
+        IsSettingsVisible="False"
+        >
+        <NavigationView.MenuItems>
+
+            <NavigationViewItem Tag="DashboardPage">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE80F;"/>
+                    <TextBlock Text="Dashboard"/>
+                </StackPanel>
+            </NavigationViewItem>
+
+            <NavigationViewItem Tag="POCPage">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE719;"/>
+                    <TextBlock Text="POS"/>
+                </StackPanel>
+            </NavigationViewItem>
+
+            <NavigationViewItem Tag="OrderPage">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE8A5;"/>
+                    <TextBlock Text="Đơn hàng"/>
+                </StackPanel>
+            </NavigationViewItem>
+
+            <NavigationViewItem Tag="ProductPage">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE7BF;"/>
+                    <TextBlock Text="Sản phẩm"/>
+                </StackPanel>
+            </NavigationViewItem>
+
+            <NavigationViewItem Tag="TablePage">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE8B7;"/>
+                    <TextBlock Text="Bàn"/>
+                </StackPanel>
+            </NavigationViewItem>
+
+            <!-- ACTIVE ITEM -->
+            <NavigationViewItem Tag="ReportPage" SelectsOnInvoked="True">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE9D2;"/>
+                    <TextBlock Text="Báo cáo"/>
+                </StackPanel>
+            </NavigationViewItem>
+
+            <NavigationViewItem Tag="AIToolPage">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE721;"/>
+                    <TextBlock Text="AI Tools"/>
+                </StackPanel>
+            </NavigationViewItem>
+
+            <NavigationViewItem Tag="AccountPage">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE77B;"/>
+                    <TextBlock Text="Tài khoản"/>
+                </StackPanel>
+            </NavigationViewItem>
+
+            <NavigationViewItem Tag="SettingPage">
+                <StackPanel Style="{StaticResource SidebarItemContentStyle}">
+                    <FontIcon Glyph="&#xE713;"/>
+                    <TextBlock Text="Cài đặt"/>
+                </StackPanel>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+
+        <NavigationView.Header>
+            <Border BorderBrush="#E5E7EB" BorderThickness="0,0,0,1">
+                <Grid Padding="20" ColumnSpacing="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Title -->
+                    <TextBlock Text="Báo cáo Kinh doanh"
+                       FontSize="26"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="16"
+                        VerticalAlignment="Center">
+
+                        <AutoSuggestBox Width="260"
+                                PlaceholderText="Tìm kiếm nhanh..."
+                                QueryIcon="Find"
+                                VerticalAlignment="Center"/>
+
+                        <Button Background="Transparent" Padding="8" Margin="0, 0, 30, 0">
+                            <FontIcon Glyph="&#xE7F4;" FontSize="18"/>
+                        </Button>
+
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                            <TextBlock Text="Quản lý Quán"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Right"/>
+                            <TextBlock Text="Admin"
+                               FontSize="12"
+                               Foreground="Gray"
+                               HorizontalAlignment="Right"/>
+                        </StackPanel>
+
+                        <PersonPicture ProfilePicture="ms-appx:///Assets/Admin.png"
+                               Width="36"
+                               Height="36"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </NavigationView.Header>
+
+        <NavigationView.PaneHeader>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="20" Margin="20, 0, 0, 0">
+                <PersonPicture
+                    ProfilePicture="ms-appx:///Assets/Admin.png"
+                    Width="40"
+                    Height="40"/>
+                <TextBlock Text="POS Cà Phê" Style="{StaticResource BodyLargeStrongTextBlockStyle}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </NavigationView.PaneHeader>
+
+        <NavigationView.PaneFooter>
+            <NavigationViewItem Tag="Logout">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <FontIcon Glyph="&#xE8AC;"/>
+                    <TextBlock Text="Đăng xuất"/>
+                </StackPanel>
+            </NavigationViewItem>
+        </NavigationView.PaneFooter>
+
+        <Frame x:Name="contentFrame" />
+    </NavigationView>
+</Page>
