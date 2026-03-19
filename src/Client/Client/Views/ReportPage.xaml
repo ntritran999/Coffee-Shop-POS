@@ -11,20 +11,31 @@
     <ScrollViewer Padding="30">
         <StackPanel Spacing="25">
 
-            <Grid>
-                <TextBlock Text="Báo cáo Kinh doanh" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
-                <AutoSuggestBox QueryIcon="Find" PlaceholderText="Tìm kiếm nhanh..." Width="300" HorizontalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="10">
-                    <FontIcon Glyph="&#xE7E7;" FontSize="16"/>
-                    <PersonPicture ProfilePicture="ms-appx:///Assets/Admin.png" Height="32"/>
+            <StackPanel Spacing="20">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Content="Doanh thu &amp; Tài chính" 
+                            Foreground="White"
+                            Background="#D97724"
+                            CornerRadius="16" Padding="20,12"/>
+                    <Button Content="Hiệu suất Sản phẩm" Style="{StaticResource SubtleButtonStyle}" CornerRadius="16" Padding="20,12"/>
                 </StackPanel>
-            </Grid>
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Content="Doanh thu &amp; Tài chính" 
-                        Foreground="White" 
-                        CornerRadius="20" Padding="20,8"/>
-                <Button Content="Hiệu suất Sản phẩm" Background="White" CornerRadius="20" Padding="20,8"/>
+                <Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Content="Ngày" Padding="20, 8" CornerRadius="12"/>
+                        <Button Content="Tuần" Padding="20, 8" CornerRadius="12"/>
+                        <Button Content="Tháng" Padding="20, 8" CornerRadius="12"/>
+                        <Button Content="Năm" Padding="20, 8" CornerRadius="12"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="10">
+                        <CalendarDatePicker PlaceholderText="From date" />
+                        <CalendarDatePicker PlaceholderText="To date" Margin="0, 0, 20, 0"/>
+                        <Button>
+                            <FontIcon Glyph="&#xE71C;" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
 
             <Grid ColumnSpacing="15">
@@ -39,6 +50,30 @@
                     <StackPanel>
                         <TextBlock Text="TỔNG DOANH THU" Foreground="Gray" FontSize="12" FontWeight="SemiBold"/>
                         <TextBlock Text="128.450.000đ" FontSize="22" FontWeight="Bold" Margin="0,10,0,0"/>
+                        <TextBlock Text="↗ +5.2% so với tháng trước" Foreground="#28A745" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="20" >
+                    <StackPanel>
+                        <TextBlock Text="LỢI NHUẬN ƯỚC TÍNH" Foreground="Gray" FontSize="12" FontWeight="SemiBold"/>
+                        <TextBlock Text="28.450.000đ" FontSize="22" FontWeight="Bold" Margin="0,10,0,0"/>
+                        <TextBlock Text="↗ +5.2% so với tháng trước" Foreground="#28A745" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Background="White" CornerRadius="12" Padding="20" >
+                    <StackPanel>
+                        <TextBlock Text="TRUNG BÌNH ĐƠN" Foreground="Gray" FontSize="12" FontWeight="SemiBold"/>
+                        <TextBlock Text="450.000" FontSize="22" FontWeight="Bold" Margin="0,10,0,0"/>
+                        <TextBlock Text="↗ +5.2% so với tháng trước" Foreground="#28A745" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="3" Background="White" CornerRadius="12" Padding="20" >
+                    <StackPanel>
+                        <TextBlock Text="TỔNG ĐƠN HÀNG" Foreground="Gray" FontSize="12" FontWeight="SemiBold"/>
+                        <TextBlock Text="8.450.000" FontSize="22" FontWeight="Bold" Margin="0,10,0,0"/>
                         <TextBlock Text="↗ +5.2% so với tháng trước" Foreground="#28A745" FontSize="11"/>
                     </StackPanel>
                 </Border>
@@ -83,6 +118,9 @@
                     </StackPanel>
                 </Border>
             </Grid>
+
+            <TextBlock Text="© 2024 POS Cà Phê • Hệ thống quản lý vận hành thông minh tối ưu cho người Việt" 
+           HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20" FontSize="11" Foreground="Gray"/>
         </StackPanel>
     </ScrollViewer>
 </Page>
