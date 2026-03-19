@@ -108,7 +108,12 @@
                     <TextBlock Text="Phiên bản v1.0.4" Foreground="Gray" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <SymbolIcon Symbol="Setting" Margin="0,0,5,0"/>
-                        <HyperlinkButton Content="Cấu hình server" Foreground="#D97724"/>
+                        <Button 
+                            x:Name="ConfigServer"
+                            Click="ConfigServer_Click"
+                            Content="Cấu hình server"
+                            Foreground="#D97724"
+                            Style="{StaticResource SubtleButtonStyle}"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>

@@ -14,5 +14,5 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <view:MainPage />
+    <view:LoginPage />
 </Window>
