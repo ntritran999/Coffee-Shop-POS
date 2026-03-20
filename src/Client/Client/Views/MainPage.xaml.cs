@@ -31,7 +31,7 @@ namespace Client.Views
 
         private void navigation_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            contentFrame.Navigate(typeof(ReportPage));
+            contentFrame.Navigate(typeof(DashboardPage));
         }
     }
 }
