@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  Username    String @id
+  Password    String
+  DisplayName String
+  Role        String
+}
+
+model Bill {
+  BillID       Int        @id @default(autoincrement())
+  DateCheckIn  DateTime   @default(now()) @db.Timestamp(6)
+  DateCheckOut DateTime?  @db.Timestamp(6)
+  TableID      Int?
+  Status       Int        @default(0)
+  TotalAmount  Float      @default(0)
+  Discount     Float      @default(0)
+  Table        Table?     @relation(fields: [TableID], references: [TableID], onUpdate: NoAction, map: "FK_Bill_Table")
+  BillInfo     BillInfo[]
+}
+
+model BillInfo {
+  BillInfoID Int     @id @default(autoincrement())
+  BillID     Int
+  ProductID  Int
+  Count      Int
+  Price      Float
+  Note       String?
+  Bill       Bill    @relation(fields: [BillID], references: [BillID], onDelete: Cascade, onUpdate: NoAction, map: "FK_BillInfo_Bill")
+  Product    Product @relation(fields: [ProductID], references: [ProductID], onDelete: Cascade, onUpdate: NoAction, map: "FK_BillInfo_Product")
+}
+
+model Category {
+  CategoryID   Int       @id @default(autoincrement())
+  CategoryName String
+  Product      Product[]
+}
+
+model Product {
+  ProductID  Int        @id @default(autoincrement())
+  Name       String
+  Price      Float
+  Unit       Int
+  CategoryID Int
+  Image      String?
+  BillInfo   BillInfo[]
+  Category   Category   @relation(fields: [CategoryID], references: [CategoryID], onDelete: Cascade, onUpdate: NoAction, map: "FK_Product_Category")
+}
+
+model Table {
+  TableID   Int    @id @default(autoincrement())
+  TableName String
+  Status    Int    @default(0)
+  Bill      Bill[]
+}
