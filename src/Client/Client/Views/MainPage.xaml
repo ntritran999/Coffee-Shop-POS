@@ -104,7 +104,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Title -->
-                    <TextBlock Text="Báo cáo Kinh doanh"
+                    <TextBlock x:Name="HeaderTitle" Text="Báo cáo Kinh doanh"
                        FontSize="26"
                        FontWeight="SemiBold"
                        VerticalAlignment="Center"/>
