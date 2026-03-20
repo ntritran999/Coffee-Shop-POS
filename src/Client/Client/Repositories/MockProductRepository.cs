@@ -5,31 +5,54 @@ using System.Text;
 
 namespace Client.Repositories
 {
-    public class MockProductRepoitory: IRepoProduct<Product>
+    public class MockProductRepoitory: IProductRepository
     {
-        public List<Product> GetAll()
+        public void Add(Product item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Product> GetAll()
         {
             return new List<Product>() { 
-                new Product() { ID = 1, Name = "Product 1", Price = 10000, ImageURL = "/Assets/ProductSource/1.png", CategoryID = 1 },
-                new Product() { ID = 2, Name = "Product 2", Price = 45000, ImageURL = "/Assets/ProductSource/2.png", CategoryID = 1 },
-                new Product() { ID = 3, Name = "Product 3", Price = 55000, ImageURL = "/Assets/ProductSource/3.png", CategoryID = 2 },
-                new Product() { ID = 4, Name = "Product 4", Price = 20000, ImageURL = "/Assets/ProductSource/4.png", CategoryID = 2 },
-                new Product() { ID = 5, Name = "Product 5", Price = 32000, ImageURL = "/Assets/ProductSource/5.png", CategoryID = 3 },
+                new Product() { ProductID = 1, Name = "Product 1", Price = 10000, Image = "/Assets/ProductSource/1.png", CategoryID = 1 },
+                new Product() { ProductID = 2, Name = "Product 2", Price = 45000, Image = "/Assets/ProductSource/2.png", CategoryID = 1 },
+                new Product() { ProductID = 3, Name = "Product 3", Price = 55000, Image = "/Assets/ProductSource/3.png", CategoryID = 2 },
+                new Product() { ProductID = 4, Name = "Product 4", Price = 20000, Image = "/Assets/ProductSource/4.png", CategoryID = 2 },
+                new Product() { ProductID = 5, Name = "Product 5", Price = 32000, Image = "/Assets/ProductSource/5.png", CategoryID = 3 },
 
             };
 
         }
 
-        public List<Product> GetByCategoryID(int catID)
+        public IEnumerable<Product> GetByCategory(string categoryId)
         {
-            List<Product> products = GetAll();
-            return products.FindAll(p => p.CategoryID == catID);
+            throw new NotImplementedException();
         }
 
-        public List<Product> GetByID(int proID)
+        public Product? GetById(string itemId)
         {
-            List<Product> products = GetAll();
-            return products.FindAll(p => p.ID == proID);
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Product> GetByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(Product item)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerable<Product> IRepo<Product>.GetAll()
+        {
+            return GetAll();
         }
     }
 }

@@ -1,33 +1,43 @@
 ﻿using Client.Models;
 using Client.Services;
+using CommunityToolkit.Mvvm.ComponentModel; // Cần thiết
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using System.Linq;
 
 namespace Client.ViewModels
 {
-    public class CategoryViewModel : BaseViewModel
+    // 1. Phải có partial. 
+    // Nếu BaseViewModel của bạn chưa kế thừa ObservableObject, hãy đổi sang kế thừa ObservableObject
+    public partial class CategoryViewModel : ObservableObject
     {
-        public ObservableCollection<Category> Categories { get; set; } = new();
-        CategoryService _categoryService = new CategoryService();
-        
-        public CategoryViewModel() 
-        {
-            Categories = new ObservableCollection<Category>(
-               _categoryService.GetAllCategories()
-           );
+        // 2. Dùng private set để bảo vệ collection
+        public ObservableCollection<Category> Categories { get; private set; }
 
+        private readonly CategoryService _categoryService = new CategoryService();
+
+        // 3. Nếu bạn muốn theo dõi danh mục đang được chọn (SelectedIndex="0" trong XAML)
+        [ObservableProperty]
+        private Category? _selectedCategory;
+
+        public CategoryViewModel()
+        {
+            // Lấy dữ liệu từ service
+            var data = _categoryService.GetAllCategories();
+
+            // Khởi tạo collection
+            Categories = new ObservableCollection<Category>(data);
+
+            // Chèn mục "Tất cả" vào đầu danh sách
             Categories.Insert(0, new Category
             {
-                ID = 0,
-                Name = "Tất cả"
-              
+                CategoryID = 0,
+                CategoryName = "Tất cả"
             });
 
-          
+            // Mặc định chọn mục đầu tiên
+            SelectedCategory = Categories.FirstOrDefault();
         }
-
-
     }
 }

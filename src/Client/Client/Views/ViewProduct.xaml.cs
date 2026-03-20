@@ -34,17 +34,7 @@ namespace Client.Views
         public ViewProduct()
         {
             InitializeComponent();
-
-            foreach (var category in CategoryView.Categories)
-            {
-                if (category.ID == 0)
-                {
-                    category.Count = ProductView.Products.Count;
-                }
-                else
-                    category.Count = ProductView.Products.Count(p => p.CategoryID == category.ID);
-            }
-
+            
             this.Loaded += (s, e) =>
             {
                 CategoryList.SelectedIndex = 0;
@@ -56,7 +46,7 @@ namespace Client.Views
             // ===== 1. LOGIC FILTER (giữ nguyên của bạn) =====
             var selected = CategoryList.SelectedItem as Category;
 
-            int categoryId = selected != null ? selected.ID : 0;
+            int categoryId = selected != null ? selected.CategoryID : 0;
 
             if (categoryId == 0)
             {

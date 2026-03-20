@@ -13,7 +13,6 @@ namespace Client.Services
         public GeminiService()
         {
             var builder = Kernel.CreateBuilder();
-            // Lưu ý: Bảo mật API Key của bạn khi deploy nhé!
             builder.AddGoogleAIGeminiChatCompletion(
                 modelId: "gemini-2.5-flash",
                 apiKey: "AIzaSyA7rOmKWhatypnzyUnWpxjuyeKmxiVP4W0"

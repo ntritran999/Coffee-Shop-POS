@@ -8,23 +8,14 @@ namespace Client.Services
 {
     public class ProductService
     {
-        private IRepoProduct<Product> _product = new MockProductRepoitory();
+        private IProductRepository _product = new MockProductRepoitory();
 
         public ProductService() { }
 
-        public List<Product> GetAllProducts()
+        public IEnumerable<Product> GetAllProducts()
         {
             return _product.GetAll();
         }
 
-        public List<Product> GetProductsByID(int proID)
-        {
-            return _product.GetByID(proID);
-        }
-
-        public List<Product> GetProductsByCategory(int catID)
-        {
-            return _product.GetByCategoryID(catID);
-        }
     }
 }

@@ -4,11 +4,9 @@ using System.Text;
 
 namespace Client.Models
 {
-    public class Category : BaseModel
+    public class Category
     {
-        public int ID { get; set; }
-        public string? Name { get; set; }
-
-        public int Count { get; set; }
+        public int CategoryID { get; set; }
+        public string CategoryName { get; set; }
     }
 }

@@ -8,11 +8,11 @@ namespace Client.Services
 {
     public class CategoryService
     {
-        private IRepoCategory<Category> _category = new MockCategoryRepository();
+        private ICategoryRepository _category = new MockCategoryRepository();
 
         public CategoryService() { }
 
-        public List<Category> GetAllCategories()
+        public IEnumerable<Category> GetAllCategories()
         {
             return _category.GetAll();
         }
