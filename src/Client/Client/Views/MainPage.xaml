@@ -30,14 +30,15 @@
         >
         <NavigationView.MenuItems>
 
-            <NavigationViewItem Tag="DashboardPage">
+            <!-- ACTIVE ITEM -->
+            <NavigationViewItem Tag="DashboardPage" SelectsOnInvoked="True">
                 <StackPanel Style="{StaticResource SidebarItemContentStyle}">
                     <FontIcon Glyph="&#xE80F;"/>
                     <TextBlock Text="Dashboard"/>
                 </StackPanel>
             </NavigationViewItem>
 
-            <NavigationViewItem Tag="POCPage">
+            <NavigationViewItem Tag="POSPage">
                 <StackPanel Style="{StaticResource SidebarItemContentStyle}">
                     <FontIcon Glyph="&#xE719;"/>
                     <TextBlock Text="POS"/>
@@ -65,8 +66,7 @@
                 </StackPanel>
             </NavigationViewItem>
 
-            <!-- ACTIVE ITEM -->
-            <NavigationViewItem Tag="ReportPage" SelectsOnInvoked="True">
+            <NavigationViewItem Tag="ReportPage">
                 <StackPanel Style="{StaticResource SidebarItemContentStyle}">
                     <FontIcon Glyph="&#xE9D2;"/>
                     <TextBlock Text="Báo cáo"/>
@@ -104,7 +104,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Title -->
-                    <TextBlock x:Name="HeaderTitle" Text="Báo cáo Kinh doanh"
+                    <TextBlock x:Name="HeaderTitle" Text="Tổng quan hệ thống"
                        FontSize="26"
                        FontWeight="SemiBold"
                        VerticalAlignment="Center"/>

@@ -14,13 +14,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Views\AccountPage.xaml" />
-    <None Remove="Views\ConfigServerDialog.xaml" />
-    <None Remove="Views\DashboardPage.xaml" />
-    <None Remove="Views\LoginPage.xaml" />
-    <None Remove="Views\MainPage.xaml" />
-    <None Remove="Views\ReportPage.xaml" />
-    <None Remove="Views\SettingsPage.xaml" />
+    <None Remove="Views\OrderListPage.xaml" />
+    <None Remove="Views\POSPage.xaml" />
+    <None Remove="Views\TablePage.xaml" />
+	<None Remove="Views\AccountPage.xaml" />
+	<None Remove="Views\ConfigServerDialog.xaml" />
+	<None Remove="Views\DashboardPage.xaml" />
+	<None Remove="Views\LoginPage.xaml" />
+	<None Remove="Views\MainPage.xaml" />
+	<None Remove="Views\ReportPage.xaml" />
+	<None Remove="Views\SettingsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,33 +62,53 @@
     <PackageReference Include="Serilog" Version="4.3.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
   </ItemGroup>
+    <ItemGroup>
+	    <Page Update="Views\DashboardPage.xaml">
+		    <Generator>MSBuild:Compile</Generator>
+	    </Page>
+    </ItemGroup>
+    <ItemGroup>
+	    <Page Update="Views\ConfigServerDialog.xaml">
+		    <Generator>MSBuild:Compile</Generator>
+	    </Page>
+    </ItemGroup>
+    <ItemGroup>
+	    <Page Update="Views\MainPage.xaml">
+		    <Generator>MSBuild:Compile</Generator>
+	    </Page>
+    </ItemGroup>
+    <ItemGroup>
+	    <Page Update="Views\LoginPage.xaml">
+		    <Generator>MSBuild:Compile</Generator>
+	    </Page>
+    </ItemGroup>
+    <ItemGroup>
+	    <Page Update="Views\AccountPage.xaml">
+		    <Generator>MSBuild:Compile</Generator>
+	    </Page>
+    </ItemGroup>
+    <ItemGroup>
+	    <Page Update="Views\SettingsPage.xaml">
+		    <Generator>MSBuild:Compile</Generator>
+	    </Page>
+    </ItemGroup>
+    <ItemGroup>
+	    <Page Update="Views\ReportPage.xaml">
+		    <Generator>MSBuild:Compile</Generator>
+	    </Page>
+    </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\DashboardPage.xaml">
+    <Page Update="Views\TablePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ConfigServerDialog.xaml">
+    <Page Update="Views\OrderListPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Views\LoginPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Views\AccountPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Views\SettingsPage.xaml">
+    <Page Update="Views\POSPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

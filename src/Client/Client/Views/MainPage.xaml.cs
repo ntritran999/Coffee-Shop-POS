@@ -12,11 +12,16 @@ namespace Client.Views
             { "ReportPage",  (typeof(ReportPage),  "Báo cáo Kinh doanh") },
             { "AccountPage", (typeof(AccountPage), "Quản lý Tài khoản") },
             { "SettingPage",  (typeof(SettingsPage), "Cấu hình Hệ thống") },
+            { "DashboardPage",  (typeof(DashboardPage),  "Tổng quan hệ thống") },
+            { "POSPage", (typeof(POSPage), "Bán hàng") },
+            { "OrderPage",  (typeof(OrderListPage), "Danh sách đơn hàng") },
+            { "TablePage",  (typeof(TablePage), "Quản lý bàn") },
         };
 
         public MainPage()
         {
             InitializeComponent();
+            contentFrame.Navigate(typeof(DashboardPage));
         }
 
         private void navigation_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
