@@ -15,9 +15,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\ConfigServerDialog.xaml" />
+    <None Remove="Views\DashboardPage.xaml" />
     <None Remove="Views\LoginPage.xaml" />
     <None Remove="Views\MainPage.xaml" />
-    <None Remove="Views\ReportPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,17 +57,17 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Views\DashboardPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\ConfigServerDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Views\ReportPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
