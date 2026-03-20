@@ -1,0 +1,9 @@
+{
+  "watch": [
+    "src",
+    "prisma",
+    ".env"
+  ],
+  "ext": "ts,json,env,prisma",
+  "exec": "tsx src/server.ts"
+}

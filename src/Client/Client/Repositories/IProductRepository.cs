@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Client.Models;
 
@@ -10,3 +10,5 @@ namespace Client.Repositories
         IEnumerable<Product> GetByName(string name);
     }
 }
+
+

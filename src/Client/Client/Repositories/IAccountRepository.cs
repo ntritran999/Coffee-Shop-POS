@@ -4,8 +4,8 @@ using Client.Models;
 
 namespace Client.Repositories
 {
-    public interface ICategoryRepository : IRepo<Category>
+    public interface IAccountRepository : IRepo<Account>
     {
-        Category? GetByName(string categoryName);
+
     }
 }

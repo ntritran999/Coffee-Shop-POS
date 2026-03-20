@@ -4,8 +4,9 @@ using Client.Models;
 
 namespace Client.Repositories
 {
-    public interface ICategoryRepository : IRepo<Category>
+    public interface ITableRepository : IRepo<Table>
     {
-        Category? GetByName(string categoryName);
+        IEnumerable<Table> GetByStatus(int status);
     }
 }
+

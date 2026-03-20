@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Client.Repositories
@@ -12,3 +12,4 @@ namespace Client.Repositories
         void Delete(string id);
     }
 }
+
