@@ -70,8 +70,6 @@
     <PackageReference Include="Serilog" Version="4.3.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Page Update="Views\ViewProduct.xaml">
     <ItemGroup>
 	    <Page Update="Views\DashboardPage.xaml">
 		    <Generator>MSBuild:Compile</Generator>
@@ -107,6 +105,11 @@
 		    <Generator>MSBuild:Compile</Generator>
 	    </Page>
     </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ViewProduct.xaml">
+		<Generator>MSBuild:Compile</Generator>
+	</Page>
+  </ItemGroup>
   <ItemGroup>
     <Page Update="Views\TablePage.xaml">
       <Generator>MSBuild:Compile</Generator>
