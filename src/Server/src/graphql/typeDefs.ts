@@ -23,10 +23,10 @@ export const typeDefs = `#graphql
     account(Username: String!): Account
   }
 
-  input AccountInput {
-    Username: String!
-    DisplayName: String!
-    Role: String!
+  input UpdateAccountInput {
+    DisplayName: String
+    Role: String
+    Password: String
   }
 
   type DeleteResponse {
@@ -36,7 +36,7 @@ export const typeDefs = `#graphql
   type Mutation {
     login(Username: String!, Password: String!): AuthPayload!
     createAccount(Username: String!, Password: String!, DisplayName: String!, Role: String!): Account!
-    updateAccount(Username: String!, Password: String, DisplayName: String, Role: String): Account!
+    updateAccount(Username: String!, updataData: UpdateAccountInput): Account!
     deleteAccount(Username: String!): DeleteResponse!
   }
 `;
