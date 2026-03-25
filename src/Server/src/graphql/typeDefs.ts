@@ -6,8 +6,8 @@ export const typeDefs = `#graphql
 
   type Account {
     Username: String!
-    Password: String
     DisplayName: String!
+    Password: String
     Role: String!
   }
 
@@ -20,10 +20,18 @@ export const typeDefs = `#graphql
     health: HealthResponse!
     currentAccount: Account
     accounts: [Account!]
+    account(Username: String!): Account
+  }
+
+  input AccountInput {
+    Username: String!
+    DisplayName: String!
+    Role: String!
   }
 
   type Mutation {
     login(Username: String!, Password: String!): AuthPayload!
     createAccount(Username: String!, Password: String!, DisplayName: String!, Role: String!): Account!
+    updateAccount(Username: String!, Password: String, DisplayName: String, Role: String): Account!
   }
 `;

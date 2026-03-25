@@ -38,3 +38,35 @@ export async function getAll() {
 
 	return accounts;
 }
+
+export async function getById(Username: string) {
+	const account = await prisma.account.findFirst({
+		where: { Username },
+		select: {
+			Username: true,
+			DisplayName: true,
+			Role: true
+		}
+	})
+
+	return account;
+}
+
+export async function updateAccount(Username: string, Password: string | undefined, DisplayName: string | undefined, Role: string | undefined) {
+	AccountValidator.validateUpdateAccount(Username, Password, DisplayName, Role);
+
+	try {
+		const updatedAccount = await prisma.account.update({
+			where: { Username },
+			data: {
+				Password: Password,
+				DisplayName: DisplayName,
+				Role: Role
+			}
+		})
+
+		return updatedAccount;
+	} catch (err) {
+		throw new GraphQLError("Account not found or update failed");
+	}
+}

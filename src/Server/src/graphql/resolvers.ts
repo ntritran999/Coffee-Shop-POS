@@ -15,6 +15,9 @@ export const resolvers = {
     accounts: async (parent: any, args: any, context: any, info: any) => {
       AuthMiddleware.requireAuth(context);
       return await AccountService.getAll();
+    },
+    account: async (parent: any, args: any, context: any, info: any) => {
+      return await AccountService.getById(args.Username);
     }
   },
   Mutation: {
@@ -24,6 +27,10 @@ export const resolvers = {
     createAccount: async (parent: any, args: any, context: any, info: any) => {
       AuthMiddleware.requireRole(context, "Manager"); // use enum in future
       return await AccountService.createAccount(args.Username, args.Password, args.DisplayName, args.Role);
+    },
+    updateAccount: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await AccountService.updateAccount(args.Username, args.Password, args.DisplayName, args.Role);
     }
   }
 };
