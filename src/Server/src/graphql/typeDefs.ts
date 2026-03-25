@@ -29,9 +29,14 @@ export const typeDefs = `#graphql
     Role: String!
   }
 
+  type DeleteResponse {
+    success: Boolean!
+  }
+
   type Mutation {
     login(Username: String!, Password: String!): AuthPayload!
     createAccount(Username: String!, Password: String!, DisplayName: String!, Role: String!): Account!
     updateAccount(Username: String!, Password: String, DisplayName: String, Role: String): Account!
+    deleteAccount(Username: String!): DeleteResponse!
   }
 `;

@@ -31,6 +31,10 @@ export const resolvers = {
     updateAccount: async (parent: any, args: any, context: any, info: any) => {
       AuthMiddleware.requireRole(context, "Manager");
       return await AccountService.updateAccount(args.Username, args.Password, args.DisplayName, args.Role);
+    },
+    deleteAccount: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await AccountService.deleteAccount(args.Username);
     }
   }
 };

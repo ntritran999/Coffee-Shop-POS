@@ -70,3 +70,15 @@ export async function updateAccount(Username: string, Password: string | undefin
 		throw new GraphQLError("Account not found or update failed");
 	}
 }
+
+export async function deleteAccount(Username: string) {
+	try {
+		const deletedAccount = await prisma.account.delete({
+			where: { Username }
+		});
+
+		return { success: true };
+	} catch (error) {
+		throw new GraphQLError("Account not found or delete failed");
+	}
+}
