@@ -19,9 +19,11 @@ export const typeDefs = `#graphql
   type Query {
     health: HealthResponse!
     currentAccount: Account
+
   }
 
   type Mutation {
     login(Username: String!, Password: String!): AuthPayload!
+    createAccount(Username: String!, Password: String!, DisplayName: String!, Role: String!): Account!
   }
 `;

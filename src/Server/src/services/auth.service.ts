@@ -2,10 +2,13 @@ import "dotenv/config";
 import prisma from "../db/prisma";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
+import * as AccountValidator from "../validators/account.validator";
 
 const secretKey = process.env.SECRET_KEY || "";
 
 export async function login(Username: string, Password: string) {
+  AccountValidator.validateLogin(Username, Password);
+
   const account = await prisma.account.findFirst({
     where: { Username }
   });

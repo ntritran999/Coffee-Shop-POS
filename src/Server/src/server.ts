@@ -26,8 +26,7 @@ async function bootstrap() {
 
       try {
         const decoded = jwt.verify(token, secretKey);
-        const account = { Username: decoded.Username, Role: decoded.Role, DisplayName: decoded.DisplayName };
-        return { account };
+        return { account: decoded };
       } catch (err) {
         return { account: null };
       }

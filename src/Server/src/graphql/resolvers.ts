@@ -1,6 +1,7 @@
 import { checkHealth } from "../services/health.service.js";
-import * as AuthService from "../services/auth.service.js";
 import * as AuthMiddleware from "../middlewares/auth.middleware.js";
+import * as AuthService from "../services/auth.service.js";
+import * as AccountService from "../services/account.service.js";
 
 export const resolvers = {
   Query: {
@@ -15,6 +16,10 @@ export const resolvers = {
   Mutation: {
     login: async (parent: any, args: any, context: any, info: any) => {
       return await AuthService.login(args.Username, args.Password);
+    },
+    createAccount: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager"); // use enum in future
+      return await AccountService.createAccount(args.Username, args.Password, args.DisplayName, args.Role);
     }
   }
 };
