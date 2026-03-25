@@ -11,6 +11,10 @@ export const resolvers = {
     currentAccount: async (parent: any, args: any, context: any, info: any) => {
       const account = AuthMiddleware.requireAuth(context);
       return account;
+    },
+    accounts: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireAuth(context);
+      return await AccountService.getAll();
     }
   },
   Mutation: {

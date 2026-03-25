@@ -19,7 +19,7 @@ export const typeDefs = `#graphql
   type Query {
     health: HealthResponse!
     currentAccount: Account
-
+    accounts: [Account!]
   }
 
   type Mutation {

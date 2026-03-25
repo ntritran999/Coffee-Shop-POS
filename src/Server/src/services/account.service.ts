@@ -22,6 +22,19 @@ export async function createAccount(Username: string, Password: string, DisplayN
 	return {
 		Username: newAccount.Username,
 		DisplayName: newAccount.DisplayName,
+		Password: newAccount.Password,
 		Role: newAccount.Role
 	};
+}
+
+export async function getAll() {
+	const accounts = await prisma.account.findMany({
+		select: {
+			Username: true,
+			DisplayName: true,
+			Role: true
+		}
+	});
+
+	return accounts;
 }
