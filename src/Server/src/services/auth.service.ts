@@ -1,0 +1,33 @@
+import "dotenv/config";
+import prisma from "../db/prisma";
+import { GraphQLError } from "graphql";
+import jwt from "jsonwebtoken";
+
+const secretKey = process.env.SECRET_KEY || "";
+
+export async function login(Username: string, Password: string) {
+  const account = await prisma.account.findFirst({
+    where: { Username }
+  });
+
+  if (!account) throw new GraphQLError("Username does not exist");
+  if (Password !== account.Password) throw new GraphQLError("Password is incorrect");
+
+  const token = jwt.sign(
+    {
+      Username: account.Username,
+      Role: account.Role
+    },
+    secretKey,
+    { expiresIn: "24h" }
+  );
+
+  return {
+    token,
+    account: {
+      Username: account.Username,
+      DisplayName: account.DisplayName,
+      Role: account.Role
+    }
+  };
+}
