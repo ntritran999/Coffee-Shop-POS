@@ -16,10 +16,11 @@ export async function login(Username: string, Password: string) {
   const token = jwt.sign(
     {
       Username: account.Username,
-      Role: account.Role
+      Role: account.Role,
+      DisplayName: account.DisplayName
     },
     secretKey,
-    { expiresIn: "24h" }
+    { expiresIn: "1h" }
   );
 
   return {
