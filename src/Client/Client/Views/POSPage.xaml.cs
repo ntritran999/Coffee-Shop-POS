@@ -1,3 +1,4 @@
+using Client.Models;
 using Client.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -30,6 +31,14 @@ namespace Client.Views
         {
             InitializeComponent();
             ViewModel = App.Services!.GetRequiredService<POSViewModel>();
+        }
+
+        private void Products_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is Product product)
+            {
+                ViewModel.SelectProductCommand.Execute(product);
+            }
         }
     }
 }
