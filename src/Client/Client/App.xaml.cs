@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,10 +43,13 @@ namespace Client
 
             services.AddSingleton<ICategoryRepository, MockCategoryRepository>();
             services.AddSingleton<IProductRepository, MockProductRepoitory>();
+            services.AddSingleton<IBillInfoRepository, BillInfoRepository>();
+            services.AddSingleton<IBillRepository, BillRepository>();
 
             services.AddSingleton<CategoryService>();
             services.AddSingleton<GeminiService>();
             services.AddSingleton<ProductService>();
+            services.AddSingleton<BillService>();
 
             services.AddTransient<POSViewModel>();
             services.AddTransient<OrderViewModel>();
