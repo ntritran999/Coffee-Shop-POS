@@ -30,7 +30,7 @@ namespace Client.ViewModels
         public ProductViewModel()
         {
             // Lấy dữ liệu và gán vào ObservableCollection
-            var data = _productService.GetAllProducts();
+            var data = _productService.GetAllProducts().Result;
             Products = new ObservableCollection<Product>(data);
 
             SelectedProduct = null;
