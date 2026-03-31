@@ -24,7 +24,7 @@ namespace Client.ViewModels
         public CategoryViewModel()
         {
             // Lấy dữ liệu từ service
-            var data = _categoryService.GetAllCategories();
+            var data = _categoryService.GetAllCategories().Result;
 
             // Khởi tạo collection
             Categories = new ObservableCollection<Category>(data);

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Client.Models;
 
 namespace Client.Repositories
 {
     public interface ITableRepository : IRepo<Table>
     {
-        IEnumerable<Table> GetByStatus(int status);
+        Task<IEnumerable<Table>> GetByStatus(int status);
     }
 }
 

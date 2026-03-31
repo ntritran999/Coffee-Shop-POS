@@ -3,6 +3,7 @@ using Client.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Client.Services
 {
@@ -12,9 +13,9 @@ namespace Client.Services
 
         public CategoryService() { }
 
-        public IEnumerable<Category> GetAllCategories()
+        public async Task<IEnumerable<Category>> GetAllCategories()
         {
-            return _category.GetAll();
+            return await _category.GetAll();
         }
     }
 }

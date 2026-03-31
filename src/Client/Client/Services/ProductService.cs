@@ -3,6 +3,7 @@ using Client.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Client.Services
 {
@@ -12,9 +13,9 @@ namespace Client.Services
 
         public ProductService() { }
 
-        public IEnumerable<Product> GetAllProducts()
+        public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            return _product.GetAll();
+            return await _product.GetAll();
         }
 
     }
