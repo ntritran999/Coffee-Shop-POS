@@ -108,9 +108,28 @@ namespace Client.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Bill>> GetAll()
+        public async Task<IEnumerable<Bill>> GetAll()
         {
-            throw new NotImplementedException();
+            var query = @"
+                query {
+                  bills {
+                    BillID
+                    DateCheckIn
+                    DateCheckOut
+                    TableID
+                    Status
+                    TotalAmount
+                    Discount
+                  }
+                }";
+
+            var raw = await SendGraphQLFieldRawAsync(query, null, "bills").ConfigureAwait(false);
+            if (raw == null)
+            {
+                return [];
+            }
+
+            return JsonSerializer.Deserialize<IEnumerable<Bill>>(raw, JsonOptions) ?? [];
         }
 
         public Task<IEnumerable<Bill>> GetByDate(DateTime fromDate, DateTime toDate)

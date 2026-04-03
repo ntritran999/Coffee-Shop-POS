@@ -45,6 +45,7 @@ namespace Client
             services.AddSingleton<IProductRepository, MockProductRepoitory>();
             services.AddSingleton<IBillInfoRepository, BillInfoRepository>();
             services.AddSingleton<IBillRepository, BillRepository>();
+            services.AddSingleton<ITableRepository, TableRepository>();
 
             services.AddSingleton<CategoryService>();
             services.AddSingleton<GeminiService>();

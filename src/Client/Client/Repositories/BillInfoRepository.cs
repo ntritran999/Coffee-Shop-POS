@@ -115,9 +115,34 @@ namespace Client.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<BillInfo>> GetByBillId(string billId)
+        public async Task<IEnumerable<BillInfo>> GetByBillId(string billId)
         {
-            throw new NotImplementedException();
+            if (!int.TryParse(billId, out int id))
+            {
+                return [];
+            }
+
+            var query = @"
+                query($BillID: Int!) {
+                  billInfo(BillID: $BillID) {
+                    BillInfoID
+                    BillID
+                    ProductID
+                    Count
+                    Price
+                    Note
+                  }
+                }";
+
+            var variables = new { BillID = id };
+
+            var raw = await SendGraphQLFieldRawAsync(query, variables, "billInfo").ConfigureAwait(false);
+            if (raw == null)
+            {
+                return [];
+            }
+
+            return JsonSerializer.Deserialize<IEnumerable<BillInfo>>(raw, JsonOptions) ?? [];
         }
 
         public Task<BillInfo?> GetById(string itemId)
