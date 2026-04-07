@@ -51,6 +51,7 @@ namespace Client
             services.AddSingleton<GeminiService>();
             services.AddSingleton<ProductService>();
             services.AddSingleton<BillService>();
+            services.AddSingleton<TableService>();
 
             services.AddTransient<POSViewModel>();
             services.AddTransient<OrderViewModel>();

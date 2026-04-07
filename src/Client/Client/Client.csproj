@@ -19,6 +19,8 @@
     <None Remove="Assets\ProductSource\3.png" />
     <None Remove="Assets\ProductSource\4.png" />
     <None Remove="Assets\ProductSource\5.png" />
+    <None Remove="Views\AddTableForm.xaml" />
+    <None Remove="Views\EditTableForm.xaml" />
     <None Remove="Views\ViewProduct.xaml" />
     <None Remove="Views\OrderListPage.xaml" />
     <None Remove="Views\POSPage.xaml" />
@@ -69,6 +71,16 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
     <PackageReference Include="Serilog" Version="4.3.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\EditTableForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\AddTableForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
     <ItemGroup>
 	    <Page Update="Views\DashboardPage.xaml">

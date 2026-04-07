@@ -95,11 +95,11 @@ namespace Client.Services
             };
         }
 
-        public async Task<bool> SaveNewBill(List<BillItem> items, bool isPaid)
+        public async Task<bool> SaveNewBill(List<BillItem> items, Table table, bool isPaid)
         {
             var addedBill = await _billRepository.Add(new Bill()
             {
-                TableID = null,
+                TableID = table.TableID != -1 ? table.TableID : null,
                 Discount = 0,
             }); 
 
