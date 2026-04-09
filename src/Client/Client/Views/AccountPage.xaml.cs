@@ -1,19 +1,21 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Client.ViewModels;
+using Microsoft.Extensions.DependencyInjection; 
 
 namespace Client.Views
 {
     public sealed partial class AccountPage : Page
     {
-        public AccountViewModel ViewModel { get; } = new AccountViewModel();
+        public AccountViewModel ViewModel { get; }
 
         public AccountPage()
         {
             InitializeComponent();
+
+            ViewModel = App.Services.GetService<AccountViewModel>();
         }
 
-        // Static helpers for x:Bind in DataTemplate (role badge styling)
         public static SolidColorBrush GetRoleBadgeBackground(bool isAdmin)
         {
             return isAdmin
