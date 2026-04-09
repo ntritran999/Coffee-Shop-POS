@@ -80,7 +80,7 @@
                 </StackPanel>
             </NavigationViewItem>
 
-            <NavigationViewItem Tag="AccountPage">
+            <NavigationViewItem x:Name="NavAccountPage" Tag="AccountPage">
                 <StackPanel Style="{StaticResource SidebarItemContentStyle}">
                     <FontIcon Glyph="&#xE77B;"/>
                     <TextBlock Text="Tài khoản"/>

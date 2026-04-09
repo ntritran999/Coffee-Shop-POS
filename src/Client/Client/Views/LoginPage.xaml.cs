@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Client.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -23,9 +25,12 @@ namespace Client.Views
     /// </summary>
     public sealed partial class LoginPage : Page
     {
+
+        public LoginViewModel ViewModel { get; }
         public LoginPage()
         {
             InitializeComponent();
+            ViewModel = App.Services.GetService<LoginViewModel>();
         }
 
         private async void ConfigServer_Click(object sender, RoutedEventArgs e)
