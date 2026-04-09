@@ -23,9 +23,13 @@ namespace Client
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        public static Frame AppFrame { get; private set; }
         public MainWindow()
         {
             InitializeComponent();
+
+            AppFrame = rootFrame;
+            AppFrame.Navigate(typeof(Views.LoginPage));
         }
     }
 }

@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -41,11 +42,23 @@ namespace Client
         {
             var services = new ServiceCollection();
 
+            services.AddSingleton<HttpClient>(sp =>
+            {
+                var client = new HttpClient();
+                // url and port must match the server's configuration
+                client.BaseAddress = new Uri("http://localhost:5000/graphql");
+                return client;
+            });
+
+
             services.AddSingleton<ICategoryRepository, MockCategoryRepository>();
             services.AddSingleton<IProductRepository, MockProductRepoitory>();
             services.AddSingleton<IBillInfoRepository, BillInfoRepository>();
             services.AddSingleton<IBillRepository, BillRepository>();
+            services.AddSingleton<IAccountRepository, ApiAccountRepository>();
 
+
+            services.AddSingleton<AuthService>();
             services.AddSingleton<CategoryService>();
             services.AddSingleton<GeminiService>();
             services.AddSingleton<ProductService>();
@@ -55,6 +68,8 @@ namespace Client
             services.AddTransient<OrderViewModel>();
             services.AddTransient<TableViewModel>();
             services.AddTransient<CategoryViewModel>();
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<AccountViewModel>();
 
             Services = services.BuildServiceProvider();
             InitializeComponent();
