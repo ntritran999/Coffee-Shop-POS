@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Client.Services
 {
@@ -12,6 +13,7 @@ namespace Client.Services
     {
         private IBillRepository _billRepository;
         private IBillInfoRepository _billInfoRepository;
+        private IProductRepository _productRepository;
 
         public BillService(IBillInfoRepository billInfoRepository, IBillRepository billRepository)
         {
@@ -73,6 +75,94 @@ namespace Client.Services
                 }
             }
             return true;
+        }
+
+        public async Task<Bill?> GetOpenBillByTable(string tableId)
+        {
+            return await _billRepository.GetByTable(tableId);
+        }
+
+        public async Task AddProduct(string billId, string productId, int quantity)
+        {
+            var product = await _productRepository.GetById(productId);
+            if (product == null) return;
+
+            var existing = await _billInfoRepository.GetItem(billId, productId);
+
+            if (existing != null)
+            {
+                existing.Count += quantity;
+                await _billInfoRepository.Update(existing);
+            }
+            else
+            {
+                var item = new BillInfo
+                {
+                    BillID = int.Parse(billId),
+                    ProductID = int.Parse(productId),
+                    Count = quantity,
+                    Price = product.Price
+                };
+
+                await _billInfoRepository.Add(item);
+            }
+
+            await UpdateTotal(billId);
+        }
+
+        public async Task RemoveProduct(string billId, string productId)
+        {
+            var existing = await _billInfoRepository.GetItem(billId, productId);
+            if (existing == null) return;
+
+            if (existing.Count > 1)
+            {
+                existing.Count--;
+                await _billInfoRepository.Update(existing);
+            }
+            else
+            {
+                await _billInfoRepository.Delete(existing.BillInfoID.ToString());
+            }
+
+            await UpdateTotal(billId);
+        }
+
+        public async Task<IEnumerable<BillInfo>> GetBillItems(string billId)
+        {
+            return await _billInfoRepository.GetByBillId(billId);
+        }
+
+        public async Task<double> CalculateTotal(string billId)
+        {
+            var items = await _billInfoRepository.GetByBillId(billId);
+            var sum = items.Sum(i => i.Count * i.Price);
+
+            var bill = await _billRepository.GetById(billId);
+            if (bill == null) return sum;
+
+            return sum - bill.Discount;
+        }
+
+        public async Task<bool> Checkout(string billId)
+        {
+            var bill = await _billRepository.GetById(billId);
+            if (bill == null) return false;
+
+            bill.Status = 1;
+            bill.DateCheckOut = DateTime.Now;
+            bill.TotalAmount = await CalculateTotal(billId);
+
+            return await _billRepository.Update(bill);
+        }
+
+        private async Task UpdateTotal(string billId)
+        {
+            var bill = await _billRepository.GetById(billId);
+            if (bill == null) return;
+
+            bill.TotalAmount = await CalculateTotal(billId);
+            await _billRepository.Update(bill);
         }
     }
 }
