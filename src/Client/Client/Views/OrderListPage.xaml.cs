@@ -31,6 +31,8 @@ public sealed partial class OrderListPage : Page
     public OrderListPage()
     {
         InitializeComponent();
+        FromDate.DateFormat = "{day.integer(2)}/{month.integer(2)}/{year.full}";
+        ToDate.DateFormat = "{day.integer(2)}/{month.integer(2)}/{year.full}";
         ViewModel = App.Services!.GetRequiredService<OrderViewModel>();
     }
 

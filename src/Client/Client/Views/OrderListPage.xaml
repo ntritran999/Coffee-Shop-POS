@@ -166,11 +166,15 @@
                                     Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}"/>
                                 <StackPanel Spacing="10" Orientation="Horizontal">
                                     <CalendarDatePicker
+                                        x:Name="FromDate"
+                                        PlaceholderText="Từ ngày"
                                 VerticalAlignment="Center"
                                 MinWidth="130"
                                 Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"/>
                                     <TextBlock Text="—" VerticalAlignment="Center"/>
                                     <CalendarDatePicker
+                                        x:Name="ToDate"
+                                        PlaceholderText="Đến ngày"
                                 VerticalAlignment="Center"
                                 MinWidth="130"
                                 Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"/>

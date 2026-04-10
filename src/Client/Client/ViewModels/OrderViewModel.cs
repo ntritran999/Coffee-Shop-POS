@@ -154,6 +154,7 @@ namespace Client.ViewModels
                     SelectedOrderLine = new();
                 }
                 ApplyFilter();
+                ApplyPaging();
             }
             catch (Exception ex)
             {

@@ -1,11 +1,9 @@
 using Client.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace Client.Repositories
@@ -13,66 +11,17 @@ namespace Client.Repositories
     public class BillRepository : IBillRepository
     {
         private readonly HttpClient _httpClient;
-        private readonly string _endpoint = "http://localhost:5000/graphql";
 
-        public BillRepository()
+        public BillRepository(HttpClient httpClient)
         {
-            _httpClient = new HttpClient();
-        }
-
-        private static readonly JsonSerializerOptions JsonOptions = new()
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
-        private async Task<string?> SendGraphQLFieldRawAsync(string query, object? variables, string fieldName)
-        {
-            try
-            {
-                var payload = new { query, variables };
-                var json = JsonSerializer.Serialize(payload, JsonOptions);
-                using var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                using var resp = await _httpClient.PostAsync(_endpoint, content).ConfigureAwait(false);
-                var respJson = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                if (!resp.IsSuccessStatusCode)
-                {
-                    Debug.WriteLine("Failed status");
-                    return null;
-                }
-
-                using var doc = JsonDocument.Parse(respJson);
-                var root = doc.RootElement;
-
-                if (root.TryGetProperty("errors", out var errors) && errors.ValueKind == JsonValueKind.Array && errors.GetArrayLength() > 0)
-                {
-                    Debug.WriteLine($"Errors: {errors}");
-                    return null;
-                }
-
-                if (!root.TryGetProperty("data", out var dataElem) || dataElem.ValueKind != JsonValueKind.Object)
-                {
-                    return null;
-                }
-
-                if (!dataElem.TryGetProperty(fieldName, out var fieldElem))
-                {
-                    return null;
-                }
-
-                
-                return fieldElem.GetRawText();
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            _httpClient = httpClient;
         }
 
         public async Task<Bill> Add(Bill item)
         {
-            var mutation = @"
+            var request = new GraphQLRequest
+            {
+                query = @"
                 mutation($data: CreateBillInput) {
                   createBill(data: $data) {
                     BillID
@@ -83,24 +32,35 @@ namespace Client.Repositories
                     TotalAmount
                     Discount
                   }
-                }";
-
-            var variables = new
-            {
-                data = new
+                }",
+                variables = new
                 {
-                    TableID = item.TableID,
-                    Discount = item.Discount
+                    data = new
+                    {
+                        TableID = item.TableID,
+                        Discount = item.Discount
+                    }
                 }
             };
 
-            var raw = await SendGraphQLFieldRawAsync(mutation, variables, "createBill").ConfigureAwait(false);
-            if (raw == null)
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("", request);
+                response.EnsureSuccessStatusCode();
+
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Bill>>>();
+
+                if (result?.errors != null && result.errors.Count > 0)
+                {
+                    return null;
+                }
+
+                return result?.data?["createBill"];
+            }
+            catch (Exception)
             {
                 return null;
             }
-
-            return JsonSerializer.Deserialize<Bill>(raw, JsonOptions);
         }
 
         public Task<bool> Delete(string id)
@@ -110,7 +70,9 @@ namespace Client.Repositories
 
         public async Task<IEnumerable<Bill>> GetAll()
         {
-            var query = @"
+            var request = new GraphQLRequest
+            {
+                query = @"
                 query {
                   bills {
                     BillID
@@ -121,15 +83,25 @@ namespace Client.Repositories
                     TotalAmount
                     Discount
                   }
-                }";
+                }"
+            };
 
-            var raw = await SendGraphQLFieldRawAsync(query, null, "bills").ConfigureAwait(false);
-            if (raw == null)
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("", request);
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, List<Bill>>>>();
+
+                if (result?.errors != null && result.errors.Count > 0)
+                {
+                    return [];
+                }
+
+                return result?.data?["bills"] ?? [];
+            }
+            catch (Exception)
             {
                 return [];
             }
-
-            return JsonSerializer.Deserialize<IEnumerable<Bill>>(raw, JsonOptions) ?? [];
         }
 
         public Task<IEnumerable<Bill>> GetByDate(DateTime fromDate, DateTime toDate)
@@ -151,7 +123,9 @@ namespace Client.Repositories
         {
             if (string.IsNullOrEmpty(tableId) || !int.TryParse(tableId, out int id)) return [];
 
-            var query = @"
+            var request = new GraphQLRequest
+            {
+                query = @"
                 query($TableID: Int) {
                   bills(TableID: $TableID, Status: 0) {
                     BillID
@@ -162,17 +136,26 @@ namespace Client.Repositories
                     TotalAmount
                     Discount
                   }
-                }";
+                }",
+                variables = new { TableID = id }
+            };
 
-            var variables = new { TableID = id };
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("", request);
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, List<Bill>>>>();
 
-            var raw = await SendGraphQLFieldRawAsync(query, variables, "bills").ConfigureAwait(false);
-            if (raw == null)
+                if (result?.errors != null && result.errors.Count > 0)
+                {
+                    return [];
+                }
+
+                return result?.data?["bills"] ?? [];
+            }
+            catch (Exception)
             {
                 return [];
             }
-
-            return JsonSerializer.Deserialize<IEnumerable<Bill>>(raw, JsonOptions) ?? [];
         }
 
         public async Task<bool> Update(Bill item)
@@ -182,33 +165,44 @@ namespace Client.Repositories
                 return false;
             }
 
-            var mutation = @"
+            var request = new GraphQLRequest
+            {
+                query = @"
                 mutation($BillID: Int!, $data: UpdateBillInput) {
                   updateBill(BillID: $BillID, data: $data) {
                     BillID
                   }
-                }";
-
-            var variables = new
-            {
-                BillID = item.BillID,
-                data = new
+                }",
+                variables = new
                 {
-                    TableID = item.TableID,
-                    Discount = item.Discount,
-                    Status = item.Status,
-                    DateCheckOut = item.DateCheckOut.HasValue ? item.DateCheckOut.Value.ToString("o", CultureInfo.InvariantCulture) : null
+                    BillID = item.BillID,
+                    data = new
+                    {
+                        TableID = item.TableID,
+                        Discount = item.Discount,
+                        Status = item.Status,
+                        DateCheckOut = item.DateCheckOut.HasValue ? item.DateCheckOut.Value.ToString("o", CultureInfo.InvariantCulture) : null
+                    }
                 }
             };
 
-            var raw = await SendGraphQLFieldRawAsync(mutation, variables, "updateBill").ConfigureAwait(false);
-            if (raw == null)
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("", request);
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Bill>>>();
+
+                if (result?.errors != null && result.errors.Count > 0)
+                {
+                    return false;
+                }
+
+                var updated = result?.data?["updateBill"];
+                return updated?.BillID > 0;
+            }
+            catch (Exception)
             {
                 return false;
             }
-
-            var updated = JsonSerializer.Deserialize<Bill>(raw, JsonOptions);
-            return updated?.BillID > 0;
         }
     }
 }
