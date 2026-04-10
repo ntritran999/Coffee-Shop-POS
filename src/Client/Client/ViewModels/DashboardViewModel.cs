@@ -27,8 +27,8 @@ namespace Client.ViewModels
     }
     public partial class DashboardViewModel : ObservableObject
     {
-        private readonly IBillRepository _billRepo;
-        private readonly BillInfoService _billInfoService = new();
+        private readonly IBillRepository _billRepo = new MockBillRepository();
+        private readonly BillService _billService = new();
 
         [ObservableProperty]
         private ISeries[] seriesCollection;
@@ -41,7 +41,6 @@ namespace Client.ViewModels
 
         public DashboardViewModel()
         {
-            _billRepo = new MockBillRepository(); // dùng mock
             _ = LoadRevenue(7);
             _ = LoadDashboardData();
         }
@@ -113,8 +112,8 @@ namespace Client.ViewModels
 
         public async Task LoadDashboardData()
         {
-            TopSellingProducts = await _billInfoService.GetTopSellingProductsAsync();
-            RecentOrders = await _billInfoService.GetRecentOrderDetailsAsync();
+            TopSellingProducts = await _billService.GetTopSellingProductsAsync();
+            RecentOrders = await _billService.GetRecentOrderDetailsAsync();
         }
     }
 }

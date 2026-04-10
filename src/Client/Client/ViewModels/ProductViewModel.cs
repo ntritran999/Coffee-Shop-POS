@@ -34,8 +34,13 @@ namespace Client.ViewModels
 
         public ProductViewModel()
         {
+            _ = _loadProducts();
+        }
+            
+        public async Task _loadProducts()
+        {
             // Lấy dữ liệu và gán vào ObservableCollection
-            var data = _productService.GetAllProducts().Result;
+            var data = await _productService.GetAllProducts();
             Products = new ObservableCollection<Product>(data);
 
             SelectedProduct = null;
