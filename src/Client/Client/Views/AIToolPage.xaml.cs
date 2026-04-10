@@ -22,10 +22,10 @@ namespace Client.Views;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class ViewAITool : Page
+public sealed partial class AIToolPage : Page
 {
     public ChatViewModel ViewModel { get; } = new();
-    public ViewAITool()
+    public AIToolPage()
     {
         InitializeComponent();
 

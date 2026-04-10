@@ -16,14 +16,11 @@ namespace Client.Repositories
                 new Category() { CategoryID = 2, CategoryName = "Category 2" },
                 new Category() { CategoryID = 3, CategoryName = "Category 3" }
             };
-
         }
-
         public Category GetByName(string name)
         {
             throw new NotImplementedException();
         }
-
         public Category GetById(string id)
         {
             throw new NotImplementedException();
@@ -38,11 +35,9 @@ namespace Client.Repositories
         {
             throw new NotImplementedException();
         }
-
         public void Delete(string id)
         {
             throw new NotImplementedException();
         }
-
     }
 }
