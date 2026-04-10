@@ -52,7 +52,7 @@ namespace Client
 
 
             services.AddSingleton<ICategoryRepository, MockCategoryRepository>();
-            services.AddSingleton<IProductRepository, MockProductRepoitory>();
+            services.AddSingleton<IProductRepository, ApiProductRepository>();
             services.AddSingleton<IBillInfoRepository, BillInfoRepository>();
             services.AddSingleton<IBillRepository, BillRepository>();
             services.AddSingleton<IAccountRepository, ApiAccountRepository>();
@@ -70,6 +70,7 @@ namespace Client
             services.AddTransient<CategoryViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<AccountViewModel>();
+            services.AddTransient<ProductViewModel>();
 
             Services = services.BuildServiceProvider();
             InitializeComponent();

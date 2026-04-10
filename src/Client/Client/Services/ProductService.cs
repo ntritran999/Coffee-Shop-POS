@@ -1,18 +1,23 @@
 ﻿using Client.Models;
 using Client.Repositories;
-using System;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http;
 
 namespace Client.Services
 {
     public class ProductService
     {
-        private IProductRepository _product = new MockProductRepoitory();
+        private readonly IProductRepository _product;
 
-        public ProductService() { }
+        public ProductService(IProductRepository productRepository)
+        {
+            _product = productRepository;
+        }
+
+        public ProductService() : this(App.Services?.GetService<IProductRepository>() ?? new MockProductRepoitory())
+        {
+        }
 
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
@@ -23,7 +28,6 @@ namespace Client.Services
         {
             string idString = id.ToString();
             return await _product.GetById(idString);
-
         }
 
         public async Task<IEnumerable<Product>> GetProductsByCategory(string categoryId)
