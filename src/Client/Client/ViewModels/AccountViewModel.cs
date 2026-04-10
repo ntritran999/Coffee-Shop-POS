@@ -1,8 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Client.Models;
+using Client.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace Client.ViewModels
 {
@@ -17,88 +19,74 @@ namespace Client.ViewModels
 
     public partial class AccountViewModel : ObservableObject
     {
+        private readonly AuthService _authService;
         public ObservableCollection<AccountListItem> Accounts { get; } = new();
 
         [ObservableProperty] private int _totalAccounts;
 
-        // Add new account form fields
         [ObservableProperty] private string _newDisplayName = string.Empty;
         [ObservableProperty] private string _newUsername = string.Empty;
         [ObservableProperty] private string _newPassword = string.Empty;
-        [ObservableProperty] private int _selectedRoleIndex = 0; // 0=Nhân viên, 1=Quản trị viên
+        [ObservableProperty] private int _selectedRoleIndex = 0;
 
         [ObservableProperty] private AccountListItem? _selectedAccount;
+        [ObservableProperty] private string _statusMessage = string.Empty; 
 
-        public AccountViewModel()
+        public AccountViewModel(AuthService authService)
         {
-            LoadDummyData();
+            _authService = authService;
+            LoadAccountsAsync();
         }
 
-        private void LoadDummyData()
+        private async void LoadAccountsAsync()
         {
             Accounts.Clear();
-            Accounts.Add(new AccountListItem
-            {
-                DisplayName = "Nguyễn Văn An",
-                Username = "@an.nv",
-                Role = "Quản trị viên",
-                LastActive = "Vừa xong",
-                IsAdmin = true
-            });
-            Accounts.Add(new AccountListItem
-            {
-                DisplayName = "Trần Thị Bình",
-                Username = "@binh.tt",
-                Role = "Nhân viên",
-                LastActive = "2 giờ trước",
-                IsAdmin = false
-            });
-            Accounts.Add(new AccountListItem
-            {
-                DisplayName = "Lê Hoàng Long",
-                Username = "@long.lh",
-                Role = "Nhân viên",
-                LastActive = "Vừa xong",
-                IsAdmin = false
-            });
-            Accounts.Add(new AccountListItem
-            {
-                DisplayName = "Phạm Minh Đức",
-                Username = "@duc.pm",
-                Role = "Nhân viên",
-                LastActive = "Hôm qua",
-                IsAdmin = false
-            });
-            Accounts.Add(new AccountListItem
-            {
-                DisplayName = "Hoàng Anh Tuấn",
-                Username = "@tuan.ha",
-                Role = "Quản trị viên",
-                LastActive = "Vừa xong",
-                IsAdmin = true
-            });
+            var accountList = await _authService.GetAllAccounts();
 
+            foreach (var acc in accountList)
+            {
+                bool isAdmin = acc.Role == "Manager";
+                Accounts.Add(new AccountListItem
+                {
+                    DisplayName = acc.DisplayName,
+                    Username = acc.Username,
+                    Role = acc.Role,
+                    LastActive = "N/A", 
+                    IsAdmin = isAdmin
+                });
+            }
             TotalAccounts = Accounts.Count;
         }
 
+        // Sửa thành Async để ghi xuống txt
         [RelayCommand]
-        private void SaveAccount()
+        private async Task SaveAccountAsync()
         {
-            if (string.IsNullOrWhiteSpace(NewDisplayName) || string.IsNullOrWhiteSpace(NewUsername))
-                return;
+            StatusMessage = string.Empty;
 
-            var isAdmin = SelectedRoleIndex == 1;
-            Accounts.Add(new AccountListItem
+            if (string.IsNullOrWhiteSpace(NewDisplayName) ||
+                string.IsNullOrWhiteSpace(NewUsername) ||
+                string.IsNullOrWhiteSpace(NewPassword))
             {
-                DisplayName = NewDisplayName,
-                Username = $"@{NewUsername}",
-                Role = isAdmin ? "Quản trị viên" : "Nhân viên",
-                LastActive = "Vừa xong",
-                IsAdmin = isAdmin
-            });
+                StatusMessage = "Vui lòng nhập đầy đủ tên, username và mật khẩu.";
+                return;
+            }
 
-            TotalAccounts = Accounts.Count;
-            ClearForm();
+            var role = SelectedRoleIndex == 1 ? "Manager" : "Cashier";
+
+            try
+            {
+                await _authService.Register(NewUsername, NewPassword, NewDisplayName, role);
+
+                // Load lại list trên UI
+                LoadAccountsAsync();
+                ClearForm();
+                StatusMessage = "Thêm tài khoản thành công!";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Lỗi: {ex.Message}";
+            }
         }
 
         [RelayCommand]
@@ -108,6 +96,7 @@ namespace Client.ViewModels
             NewUsername = string.Empty;
             NewPassword = string.Empty;
             SelectedRoleIndex = 0;
+            StatusMessage = string.Empty;
         }
     }
 }

@@ -1,3 +1,6 @@
+using Client.Models;
+using Client.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -23,9 +26,19 @@ namespace Client.Views
     /// </summary>
     public sealed partial class POSPage : Page
     {
+        public POSViewModel ViewModel { get; set; }
         public POSPage()
         {
             InitializeComponent();
+            ViewModel = App.Services!.GetRequiredService<POSViewModel>();
+        }
+
+        private void Products_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is Product product)
+            {
+                ViewModel.SelectProductCommand.Execute(product);
+            }
         }
     }
 }

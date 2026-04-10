@@ -16,5 +16,5 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <view:MainPage />
+    <Frame x:Name="rootFrame" />
 </Window>

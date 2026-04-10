@@ -104,6 +104,7 @@
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Foreground" Value="White" />
                         </Style>
                     </ListView.ItemContainerStyle>
                 </ListView>
@@ -111,7 +112,7 @@
                 <StackPanel Grid.Row="2" Padding="20">
                     <ProgressBar IsIndeterminate="True" Margin="0,0,0,10"
                                  Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                    <Border Background="Black" CornerRadius="25" Padding="15,5">
+                    <Border Background="White" CornerRadius="25" Padding="15,5">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -132,10 +133,10 @@
             </Grid>
         </Border>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,15,0,0" Spacing="10">
+        <!--StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,15,0,0" Spacing="10">
             <TextBlock Text="Gợi ý:" VerticalAlignment="Center" Foreground="Gray" Margin="0,0,5,0"/>
             <Button Content="Top 3 món bán chạy?" Style="{StaticResource AccentButtonStyle}" Background="Transparent" Foreground="Gray" BorderBrush="#DDD" CornerRadius="15"/>
             <Button Content="Dự báo doanh thu mai?" Style="{StaticResource AccentButtonStyle}" Background="Transparent" Foreground="Gray" BorderBrush="#DDD" CornerRadius="15"/>
-        </StackPanel>
+        </-->
     </Grid>
 </Page>

@@ -1,3 +1,4 @@
+using Client.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -24,6 +25,10 @@ namespace Client.Views
         public MainPage()
         {
             InitializeComponent();
+            if (!SessionManager.IsAdmin)
+            {
+                NavAccountPage.Visibility = Visibility.Collapsed;
+            }
             contentFrame.Navigate(typeof(DashboardPage));
         }
 

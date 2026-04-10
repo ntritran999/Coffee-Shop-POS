@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Client.Models;
 
 namespace Client.Repositories
 {
     public interface IBillInfoRepository : IRepo<BillInfo>
     {
-        IEnumerable<BillInfo> GetByBillId(string billId);
-        BillInfo? GetItem(string billId, string productId);
+        Task<IEnumerable<BillInfo>> GetByBillId(string billId);
+        Task<BillInfo?> GetItem(string billId, string productId);
     }
 }

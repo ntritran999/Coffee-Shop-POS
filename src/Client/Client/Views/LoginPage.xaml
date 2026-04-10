@@ -63,6 +63,7 @@
                             <TextBlock Text="Tên đăng nhập" FontWeight="Medium"/>
                             <Grid>
                                 <TextBox PlaceholderText="admin_pos" 
+                                     Text="{x:Bind ViewModel.Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      Padding="35,7,10,7" 
                                      HorizontalAlignment="Stretch"
                                      CornerRadius="8"
@@ -84,6 +85,7 @@
                             </Grid>
                             <Grid>
                                 <PasswordBox PlaceholderText="••••••••" 
+                                     Password="{x:Bind ViewModel.Password, Mode=TwoWay}"
                                      Padding="35,7,40,7" 
                                      HorizontalAlignment="Stretch"
                                      CornerRadius="8"
@@ -97,9 +99,15 @@
                             </Grid>
                         </StackPanel>
 
-                        <CheckBox Content="Nhớ đăng nhập" FontSize="14"/>
+                        <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" 
+                                   Foreground="#E8533F" 
+                                   TextWrapping="Wrap" />
 
-                        <Button Content="Đăng nhập" Background="#D97724" Foreground="White" 
+                        <CheckBox Content="Nhớ đăng nhập" FontSize="14" IsChecked="{x:Bind ViewModel.IsRememberMe, Mode=TwoWay}"/>
+
+                        <Button Content="Đăng nhập" 
+                                Command="{x:Bind ViewModel.LoginCommand}"
+                                Background="#D97724" Foreground="White" 
                                 HorizontalAlignment="Stretch" Padding="15" CornerRadius="8" FontSize="16" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
