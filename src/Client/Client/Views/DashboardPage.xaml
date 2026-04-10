@@ -4,11 +4,14 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Client.Views"
+    xmlns:converter="using:Client.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
     mc:Ignorable="d">
 
     <Page.Resources>
+        <converter:SelectedRangeToBrushConverter x:Key="RangeToBrushConverter"/>
     </Page.Resources>
 
     <ScrollViewer Padding="20">
@@ -79,16 +82,26 @@
                             Spacing="8" 
                             VerticalAlignment="Top">
 
-                            <Button Content="Tuần này" Style="{StaticResource AccentButtonStyle}" CornerRadius="8"/>
-                            <Button Content="Tháng này" CornerRadius="8"/>
-                            <Button Content="Quý này" CornerRadius="8"/>
+                            <Button Content="Tuần này" CornerRadius="8"
+                                    Command="{x:Bind ViewModel.LoadWeekCommand}"
+                                    Background="{x:Bind ViewModel.SelectedRange, Converter={StaticResource RangeToBrushConverter}, ConverterParameter=Week, Mode=OneWay}"/>
+
+                            <Button Content="Tháng này" CornerRadius="8"
+                                    Command="{x:Bind ViewModel.LoadMonthCommand}"
+                                    Background="{x:Bind ViewModel.SelectedRange, Converter={StaticResource RangeToBrushConverter}, ConverterParameter=Month, Mode=OneWay}"/>
+
+                            <Button Content="Quý này" CornerRadius="8"
+                                    Command="{x:Bind ViewModel.LoadQuarterCommand}"
+                                    Background="{x:Bind ViewModel.SelectedRange, Converter={StaticResource RangeToBrushConverter}, ConverterParameter=Quarter, Mode=OneWay}"/>
                         </StackPanel>
                     </Grid>
 
                     <!-- Chart Placeholder: Bạn nên dùng thư viện WinUI Chart như WinUI.Charting hoặc LiveCharts2 -->
-                    <Canvas Grid.Row="1" Height="300" Margin="0,20,0,0">
-                        <TextBlock Text="[Biểu đồ sẽ hiển thị ở đây]" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Canvas>
+                    <Grid Grid.Row="1" Height="300" Margin="0,20,0,0">
+                        <lvc:CartesianChart Series="{x:Bind ViewModel.SeriesCollection, Mode=OneWay}">
+                            
+                        </lvc:CartesianChart>
+                    </Grid>
                 </Grid>
             </Border>
 
@@ -98,54 +111,40 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="15" BorderThickness="1" BorderBrush="#EEE">
                     <StackPanel>
                         <TextBlock Text="Top 5 bán chạy" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                        <ListView SelectionMode="None">
-                            <ListViewItem HorizontalContentAlignment="Stretch">
-                                <Grid ColumnSpacing="12" Padding="0,5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+                        <ListView ItemsSource="{x:Bind ViewModel.TopSellingProducts, Mode=OneWay}" SelectionMode="None">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="local:TopSellingProductItem">
+                                    <Grid ColumnSpacing="12" Padding="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="8" Background="LightGray">
-                                        <SymbolIcon Symbol="Favorite"/>
-                                    </Border>
+                                        <!-- Icon/Ảnh sản phẩm -->
+                                        <Border Grid.Column="0" Width="40" Height="40" CornerRadius="8" Background="#FFD700" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Image Source="{x:Bind product.Image}" Stretch="UniformToFill"/>
+                                        </Border>
 
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="Cà Phê Muối" FontWeight="SemiBold"/>
-                                        <TextBlock Text="35.000đ" Foreground="Gray" FontSize="12"/>
-                                    </StackPanel>
+                                        <!-- Tên và giá sản phẩm -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind product.Name}" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{x:Bind product.Price, Mode=OneWay}" Foreground="Gray" FontSize="12"/>
+                                        </StackPanel>
 
-                                    <StackPanel Grid.Column="2" HorizontalAlignment="Right">
-                                        <TextBlock Text="124" Foreground="Orange" FontWeight="Bold" HorizontalAlignment="Right"/>
-                                        <TextBlock Text="Lượt bán" FontSize="10" Foreground="Gray"/>
-                                    </StackPanel>
-                                </Grid>
-                            </ListViewItem>
-
-                            <ListViewItem HorizontalContentAlignment="Stretch">
-                                <Grid ColumnSpacing="12" Padding="0,5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="8" Background="#FFE4C4"/>
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="Trà Đào Cam Sả" FontWeight="SemiBold"/>
-                                        <TextBlock Text="45.000đ" Foreground="Gray" FontSize="12"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" HorizontalAlignment="Right">
-                                        <TextBlock Text="98" Foreground="Orange" FontWeight="Bold" HorizontalAlignment="Right"/>
-                                        <TextBlock Text="Lượt bán" FontSize="10" Foreground="Gray"/>
-                                    </StackPanel>
-                                </Grid>
-                            </ListViewItem>
+                                        <!-- Tổng số lượt bán -->
+                                        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind totalSold}" Foreground="Orange" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="Lượt bán" FontSize="10" Foreground="Gray" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
                         </ListView>
                     </StackPanel>
                 </Border>
@@ -217,67 +216,54 @@
                     <StackPanel>
                         <TextBlock Text="Đơn hàng gần đây" FontWeight="Bold"/>
 
-                        <ListView SelectionMode="None" Padding="0">
-                            <ListViewItem HorizontalContentAlignment="Stretch" Margin="0,0,0,12" Padding="0">
-                                <Border Background="#FFF9F2" CornerRadius="12" Padding="15" BorderThickness="1" BorderBrush="#F0F0F0">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid Grid.Row="0">
-                                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                                <Border Background="#FFE4C4" CornerRadius="4" Padding="6,2">
-                                                    <TextBlock Text="ORD-8821" FontSize="10" Foreground="#D2691E" FontWeight="Bold"/>
-                                                </Border>
-                                                <TextBlock Text="Bàn 04" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <ListView SelectionMode="None" Padding="0" ItemsSource="{x:Bind ViewModel.RecentOrders, Mode=OneWay}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="local:RecentOrderItem">
+                                    <Border Background="#FFF9F2" CornerRadius="12" Padding="15" BorderThickness="1" BorderBrush="#F0F0F0" Margin="0,0,0,12">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Header: OrderID + Table + Status -->
+                                            <Grid Grid.Row="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <Border Background="#F0F0F0" CornerRadius="4" Padding="6,2">
+                                                        <TextBlock Text="{x:Bind BillID}" 
+                                                   FontSize="10" FontWeight="Bold" Foreground="Gray"/>
+                                                    </Border>
+                                                    <TextBlock Text="{x:Bind TableID}" 
+                                                               FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+
+                                                <TextBlock Grid.Column="1" 
+                                                           Text="{x:Bind StatusText}"
+                                                           Foreground="Orange"
+                                                           FontSize="11" VerticalAlignment="Center"/>
+                                            </Grid>
+
+                                            <!-- Total Amount -->
+                                            <TextBlock Grid.Row="1" 
+                                       Text="{x:Bind TotalAmount}" 
+                                       FontSize="18" FontWeight="Bold" Margin="0,8,0,0"/>
+
+                                            <!-- Time Ago -->
+                                            <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="5" Margin="0,4,0,0">
+                                                <SymbolIcon Symbol="Clock" Foreground="Gray" Width="12"/>
+                                                <TextBlock Text="{x:Bind DateCheckIn}" 
+                                           Foreground="Gray" FontSize="11"/>
                                             </StackPanel>
-                                            <TextBlock Text="● Đã thanh toán" HorizontalAlignment="Right" Foreground="Green" FontSize="11" VerticalAlignment="Center"/>
                                         </Grid>
-
-                                        <Grid Grid.Row="1" Margin="0,8">
-                                            <TextBlock Text="125.000đ" FontSize="18" FontWeight="Bold"/>
-                                            <SymbolIcon Symbol="Up" HorizontalAlignment="Right" Foreground="Gray">
-                                                <SymbolIcon.RenderTransform>
-                                                    <RotateTransform Angle="45"/>
-                                                </SymbolIcon.RenderTransform>
-                                            </SymbolIcon>
-                                        </Grid>
-
-                                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="5">
-                                            <SymbolIcon Symbol="Clock" Foreground="Gray" Width="12"/>
-                                            <TextBlock Text="5 phút trước" Foreground="Gray" FontSize="11"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </ListViewItem>
-
-                            <ListViewItem HorizontalContentAlignment="Stretch" Margin="0,0,0,12" Padding="0">
-                                <Border Background="White" CornerRadius="12" Padding="15" BorderThickness="1" BorderBrush="#F0F0F0">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid Grid.Row="0">
-                                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                                <Border Background="#F0F0F0" CornerRadius="4" Padding="6,2">
-                                                    <TextBlock Text="ORD-8822" FontSize="10" Foreground="Gray" FontWeight="Bold"/>
-                                                </Border>
-                                                <TextBlock Text="Bàn 12" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                            <TextBlock Text="● Đang pha chế" HorizontalAlignment="Right" Foreground="Orange" FontSize="11" VerticalAlignment="Center"/>
-                                        </Grid>
-                                        <TextBlock Grid.Row="1" Text="85.000đ" FontSize="18" FontWeight="Bold" Margin="0,8"/>
-                                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="5">
-                                            <SymbolIcon Symbol="Clock" Foreground="Gray" Width="12"/>
-                                            <TextBlock Text="2 phút trước" Foreground="Gray" FontSize="11"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </ListViewItem>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
                         </ListView>
 
                         <Button

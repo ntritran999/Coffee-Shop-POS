@@ -1,0 +1,213 @@
+﻿using Client.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace Client.Repositories
+{
+    public class ApiProductRepository : IProductRepository
+    {
+        private readonly HttpClient _httpClient;
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        public ApiProductRepository(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        private async Task<JsonElement?> SendAsync(string query, object? variables, string fieldName)
+        {
+            var request = new GraphQLRequest
+            {
+                query = query,
+                variables = variables ?? new { }
+            };
+
+            var response = await _httpClient.PostAsJsonAsync("", request).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content
+                .ReadFromJsonAsync<GraphQLResponse<Dictionary<string, JsonElement>>>(JsonOptions)
+                .ConfigureAwait(false);
+
+            if (result?.errors != null && result.errors.Count > 0)
+            {
+                throw new Exception(result.errors[0].message);
+            }
+
+            if (result?.data == null || !result.data.TryGetValue(fieldName, out var data))
+            {
+                return null;
+            }
+
+            return data;
+        }
+
+        public async Task<IEnumerable<Product>> GetAll()
+        {
+            var query = @"query {
+                            products {
+                                ProductID
+                                Name
+                                Price
+                                Unit
+                                CategoryID
+                                Image
+                            }
+                          }";
+
+            var data = await SendAsync(query, null, "products").ConfigureAwait(false);
+            if (data == null)
+            {
+                return [];
+            }
+
+            return JsonSerializer.Deserialize<List<Product>>(data.Value.GetRawText(), JsonOptions) ?? [];
+        }
+
+        public async Task<Product?> GetById(string itemId)
+        {
+            if (!int.TryParse(itemId, out var productId))
+            {
+                return null;
+            }
+
+            var query = @"query($productId: Int!) {
+                            product(ProductID: $productId) {
+                                ProductID
+                                Name
+                                Price
+                                Unit
+                                CategoryID
+                                Image
+                            }
+                          }";
+
+            var variables = new { productId };
+            var data = await SendAsync(query, variables, "product").ConfigureAwait(false);
+            if (data == null || data.Value.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+
+            return JsonSerializer.Deserialize<Product>(data.Value.GetRawText(), JsonOptions);
+        }
+
+        public async Task<Product> Add(Product item)
+        {
+            var mutation = @"mutation($data: CreateProductInput!) {
+                                createProduct(data: $data) {
+                                    ProductID
+                                    Name
+                                    Price
+                                    Unit
+                                    CategoryID
+                                    Image
+                                }
+                              }";
+
+            var variables = new
+            {
+                data = new
+                {
+                    item.Name,
+                    item.Price,
+                    item.Unit,
+                    item.CategoryID,
+                    item.Image
+                }
+            };
+
+            var data = await SendAsync(mutation, variables, "createProduct").ConfigureAwait(false);
+            var created = data == null
+                ? null
+                : JsonSerializer.Deserialize<Product>(data.Value.GetRawText(), JsonOptions);
+
+            return created ?? throw new InvalidOperationException("Cannot create product.");
+        }
+
+        public async Task<bool> Update(Product item)
+        {
+            if (item.ProductID <= 0)
+            {
+                return false;
+            }
+
+            var mutation = @"mutation($productId: Int!, $data: UpdateProductInput!) {
+                                updateProduct(ProductID: $productId, data: $data) {
+                                    ProductID
+                                }
+                              }";
+
+            var variables = new
+            {
+                productId = item.ProductID,
+                data = new
+                {
+                    item.Name,
+                    item.Price,
+                    item.Unit,
+                    item.CategoryID,
+                    item.Image
+                }
+            };
+
+            var data = await SendAsync(mutation, variables, "updateProduct").ConfigureAwait(false);
+            if (data == null || data.Value.ValueKind == JsonValueKind.Null)
+            {
+                return false;
+            }
+
+            var updated = JsonSerializer.Deserialize<Product>(data.Value.GetRawText(), JsonOptions);
+            return updated?.ProductID > 0;
+        }
+
+        public async Task<bool> Delete(string id)
+        {
+            if (!int.TryParse(id, out var productId))
+            {
+                return false;
+            }
+
+            var mutation = @"mutation($productId: Int!) {
+                                deleteProduct(ProductID: $productId) {
+                                    success
+                                }
+                              }";
+
+            var data = await SendAsync(mutation, new { productId }, "deleteProduct").ConfigureAwait(false);
+            if (data == null || data.Value.ValueKind == JsonValueKind.Null)
+            {
+                return false;
+            }
+
+            if (data.Value.TryGetProperty("success", out var successElement) &&
+                (successElement.ValueKind == JsonValueKind.True || successElement.ValueKind == JsonValueKind.False))
+            {
+                return successElement.GetBoolean();
+            }
+
+            return false;
+        }
+
+        public async Task<IEnumerable<Product>> GetByCategory(string categoryId)
+        {
+            var products = await GetAll().ConfigureAwait(false);
+            return products.Where(p => p.CategoryID.ToString() == categoryId);
+        }
+
+        public async Task<IEnumerable<Product>> GetByName(string name)
+        {
+            var products = await GetAll().ConfigureAwait(false);
+            return products.Where(p => p.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+}
