@@ -1,3 +1,5 @@
+using Client.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,8 +25,11 @@ namespace Client.Views;
 /// </summary>
 public sealed partial class TablePage : Page
 {
+    public TableViewModel ViewModel { get; }
+
     public TablePage()
     {
         InitializeComponent();
+        ViewModel = App.Services!.GetRequiredService<TableViewModel>();
     }
 }

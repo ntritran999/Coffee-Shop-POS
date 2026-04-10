@@ -10,13 +10,15 @@ namespace Client.Views
     {
         private readonly Dictionary<string, (Type pageType, string title)> _pageMap = new()
         {
-            { "ReportPage",  (typeof(ReportPage),  "Báo cáo Kinh doanh") },
-            { "AccountPage", (typeof(AccountPage), "Quản lý Tài khoản") },
-            { "SettingPage",  (typeof(SettingsPage), "Cấu hình Hệ thống") },
-            { "DashboardPage",  (typeof(DashboardPage),  "Tổng quan hệ thống") },
-            { "POSPage", (typeof(POSPage), "Bán hàng") },
-            { "OrderPage",  (typeof(OrderListPage), "Danh sách đơn hàng") },
-            { "TablePage",  (typeof(TablePage), "Quản lý bàn") },
+            { "ReportPage",  (typeof(ReportPage), "Bao cao kinh doanh") },
+            { "AccountPage", (typeof(AccountPage), "Quan ly tai khoan") },
+            { "SettingPage", (typeof(SettingsPage), "Cau hinh he thong") },
+            { "DashboardPage", (typeof(DashboardPage), "Tong quan he thong") },
+            { "POSPage", (typeof(POSPage), "Ban hang") },
+            { "OrderPage", (typeof(OrderListPage), "Danh sach don hang") },
+            { "ProductPage", (typeof(ViewProduct), "Quan ly san pham") },
+            { "TablePage", (typeof(TablePage), "Quan ly ban") },
+            { "AIToolPage", (typeof(ViewAITool), "AI Tools") }
         };
 
         public MainPage()
@@ -26,21 +28,33 @@ namespace Client.Views
             {
                 NavAccountPage.Visibility = Visibility.Collapsed;
             }
+
             contentFrame.Navigate(typeof(DashboardPage));
         }
 
         private void navigation_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            if (args.InvokedItemContainer is NavigationViewItem item &&
-                item.Tag is string tag &&
-                _pageMap.TryGetValue(tag, out var entry))
+            if (args.InvokedItemContainer is not NavigationViewItem item)
             {
-                if (contentFrame.CurrentSourcePageType != entry.pageType)
-                {
-                    contentFrame.Navigate(entry.pageType);
-                }
-                HeaderTitle.Text = entry.title;
+                return;
             }
+
+            if (item.Tag is not string tag)
+            {
+                return;
+            }
+
+            if (!_pageMap.TryGetValue(tag, out var entry))
+            {
+                return;
+            }
+
+            if (contentFrame.CurrentSourcePageType != entry.pageType)
+            {
+                contentFrame.Navigate(entry.pageType);
+            }
+
+            HeaderTitle.Text = entry.title;
         }
     }
 }

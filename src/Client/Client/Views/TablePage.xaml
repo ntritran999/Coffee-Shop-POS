@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Client.Views"
+    xmlns:model="using:Client.Models"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -29,79 +30,82 @@
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="5">
-                    <Button CornerRadius="12" Content="Tat ca"/>
-                    <Button CornerRadius="12" Content="Lau 1"/>
-                    <Button CornerRadius="12" Content="Lau 2"/>
+                    <Button CornerRadius="12" Content="Tat ca" Command="{x:Bind ViewModel.LoadCommand}"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" Spacing="5">
-                <Button>
+                <Button Command="{x:Bind ViewModel.LoadCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="5" Padding="10">
-                        <FontIcon Glyph="&#xE710;" />
-                        <TextBlock Text="Them ban" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <FontIcon Glyph="&#xE72C;" />
+                        <TextBlock Text="Lam moi" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Text="Lan cap nhat cuoi: " FontStyle="Italic" FontWeight="Light"/>
+                <TextBlock FontStyle="Italic" FontWeight="Light">
+                    <Run Text="Lan cap nhat cuoi: "/>
+                    <Run Text="{x:Bind ViewModel.LastUpdatedText, Mode=OneWay}"/>
+                </TextBlock>
             </StackPanel>
         </Grid>
         <Border Grid.Row="1" CornerRadius="12" Background="White" BorderBrush="Black" BorderThickness="1" Padding="12">
-            <Grid >
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="15" Margin="30, 0, 0, 0">
-                    <TextBlock Text="Ban trong( )"/>
-                    <TextBlock Text="Dang dung( )"/>
-                    <TextBlock Text="Dang don( )"/>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="15" Margin="30,0,0,0">
+                    <TextBlock>
+                        <Run Text="Ban trong ("/>
+                        <Run Text="{x:Bind ViewModel.EmptyCount, Mode=OneWay}"/>
+                        <Run Text=")"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Dang dung ("/>
+                        <Run Text="{x:Bind ViewModel.OccupiedCount, Mode=OneWay}"/>
+                        <Run Text=")"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Dang don ("/>
+                        <Run Text="{x:Bind ViewModel.CleaningCount, Mode=OneWay}"/>
+                        <Run Text=")"/>
+                    </TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="10" Grid.Column="1">
                     <TextBlock Text="|"/>
                     <TextBlock>
                         <Run Text="Tong so: "/>
-                        <Run Text="12 ban"/>
+                        <Run Text="{x:Bind ViewModel.TotalCount, Mode=OneWay}"/>
+                        <Run Text=" ban"/>
                     </TextBlock>
                 </StackPanel>
             </Grid>
         </Border>
-        <ListView Grid.Row="2" SelectionMode="None">
+        <ListView Grid.Row="2" SelectionMode="None" ItemsSource="{x:Bind ViewModel.Tables, Mode=OneWay}">
             <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Border Width="200" Height="300" Background="White" CornerRadius="12">
+                <DataTemplate x:DataType="model:Table">
+                    <Border Width="220" Height="260" Background="White" CornerRadius="12">
                         <Grid Padding="12">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Grid.Row="0" Orientation="Vertical" >
-                                <TextBlock Text="KHU VUC A" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                <TextBlock Text="Ban 01" FontWeight="Bold" FontSize="24" Margin="0, 0, 0, 20"/>
+                            <TextBlock Grid.Row="0" Text="{x:Bind TableName, Mode=OneWay}" FontWeight="Bold" FontSize="24" Margin="0,0,0,20"/>
+                            <StackPanel Grid.Row="1" Orientation="Vertical" Spacing="12">
                                 <Border CornerRadius="12" BorderBrush="Black" BorderThickness="1" Padding="12,4" HorizontalAlignment="Left">
                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                         <FontIcon Glyph="&#xE716;" />
-                                        <TextBlock Text="Co nguoi"/>
+                                        <TextBlock Text="{x:Bind Status, Mode=OneWay}"/>
                                     </StackPanel>
                                 </Border>
-                                <Grid Margin="0, 10, 0, 20" RowSpacing="10">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Suc chua:"/>
-                                    <TextBlock Grid.Column="0" Grid.Row="1" Text="Da ngoi:"/>
-                                    <TextBlock Grid.Column="1" Grid.Row="0" Text="2 khach" FontWeight="Bold"/>
-                                    <TextBlock Grid.Column="1" Grid.Row="1" Text="45 phut"/>
-                                </Grid>
+                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                    <Run Text="Trang thai: "/>
+                                    <Run Text="{x:Bind Status, Mode=OneWay}"/>
+                                </TextBlock>
                             </StackPanel>
-                            <Button Grid.Row="1" HorizontalAlignment="Stretch">
+                            <Button Grid.Row="2" HorizontalAlignment="Stretch">
                                 <TextBlock Text="Xem don" FontSize="20"/>
                             </Button>
                         </Grid>
-                        
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -110,13 +114,12 @@
                     <toolkit:WrapPanel VerticalSpacing="30"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
-            <x:String>Test1</x:String>
-            <x:String>Test1</x:String>
-            <x:String>Test1</x:String>
-            <x:String>Test1</x:String>
-            <x:String>Test1</x:String>
-            <x:String>Test1</x:String>
-            <x:String>Test1</x:String>
         </ListView>
+        <ProgressRing Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"/>
+        <InfoBar Grid.Row="2"
+                 VerticalAlignment="Bottom"
+                 IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
+                 Severity="Error"
+                 Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" />
     </Grid>
 </Page>

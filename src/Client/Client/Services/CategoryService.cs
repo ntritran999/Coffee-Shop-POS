@@ -9,9 +9,12 @@ namespace Client.Services
 {
     public class CategoryService
     {
-        private ICategoryRepository _category = new MockCategoryRepository();
+        private readonly ICategoryRepository _category;
 
-        public CategoryService() { }
+        public CategoryService(ICategoryRepository? categoryRepository = null)
+        {
+            _category = categoryRepository ?? new MockCategoryRepository();
+        }
 
         public async Task<IEnumerable<Category>> GetAllCategories()
         {

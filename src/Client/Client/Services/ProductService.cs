@@ -9,9 +9,12 @@ namespace Client.Services
 {
     public class ProductService
     {
-        private IProductRepository _product = new MockProductRepoitory();
+        private readonly IProductRepository _product;
 
-        public ProductService() { }
+        public ProductService(IProductRepository? productRepository = null)
+        {
+            _product = productRepository ?? new MockProductRepoitory();
+        }
 
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
