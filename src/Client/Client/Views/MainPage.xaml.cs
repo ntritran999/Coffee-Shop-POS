@@ -10,7 +10,7 @@ namespace Client.Views
     {
         private readonly Dictionary<string, (Type pageType, string title)> _pageMap = new()
         {
-            { "ReportPage",  (typeof(ReportPage), "Bao cao kinh doanh") },
+            { "ReportPage", (typeof(ReportPage), "Bao cao kinh doanh") },
             { "AccountPage", (typeof(AccountPage), "Quan ly tai khoan") },
             { "SettingPage", (typeof(SettingsPage), "Cau hinh he thong") },
             { "DashboardPage", (typeof(DashboardPage), "Tong quan he thong") },

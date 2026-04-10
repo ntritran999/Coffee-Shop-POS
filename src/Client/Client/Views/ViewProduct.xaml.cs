@@ -1,5 +1,6 @@
 ﻿using Client.Models;
 using Client.ViewModels;
+using Client.Views.Forms;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -10,6 +11,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -34,7 +36,7 @@ namespace Client.Views
         public ViewProduct()
         {
             InitializeComponent();
-            
+
             this.Loaded += (s, e) =>
             {
                 CategoryList.SelectedIndex = 0;
@@ -122,6 +124,21 @@ namespace Client.Views
             }
 
             return list;
+        }
+
+        public async void AddProduct_Click(object sender, RoutedEventArgs e)
+        {
+            await ProductView.AddProduct();
+        }
+
+        public async void EditProduct_Click(object sender, RoutedEventArgs e)
+        {
+            await ProductView.EditProduct();
+        }
+
+        public async void DeleteProduct_Click(object sender, RoutedEventArgs e)
+        {
+            await ProductView.DeleteProduct();
         }
     }
 }
