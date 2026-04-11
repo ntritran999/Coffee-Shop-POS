@@ -1,8 +1,10 @@
     using Client.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Client.Repositories
@@ -10,6 +12,12 @@ namespace Client.Repositories
     public class BillInfoRepository : IBillInfoRepository
     {
         private readonly HttpClient _httpClient;
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = null,
+        };
 
         public BillInfoRepository(HttpClient httpClient)
         {
@@ -104,7 +112,7 @@ namespace Client.Repositories
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("", request);
+                var response = await _httpClient.PostAsJsonAsync("", request, JsonOptions);
                 var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, List<BillInfo>>>>();
 
                 if (result?.errors != null && result.errors.Count > 0)
@@ -118,7 +126,7 @@ namespace Client.Repositories
             {
                 return [];
             }
-        }
+}
 
         public Task<BillInfo?> GetById(string itemId)
         {

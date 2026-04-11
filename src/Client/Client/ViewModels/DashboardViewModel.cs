@@ -27,7 +27,6 @@ namespace Client.ViewModels
     }
     public partial class DashboardViewModel : ObservableObject
     {
-        private readonly IBillRepository _billRepo = new MockBillRepository();
         private readonly BillService _billService;
 
         [ObservableProperty]
@@ -37,48 +36,95 @@ namespace Client.ViewModels
         private string[] labels;
 
         [ObservableProperty]
-        private TimeRange selectedRange;
+        private TimeRange selectedRange = TimeRange.Week;
+
+        [ObservableProperty]
+        private List<TopSellingProductItem> topSellingProducts = new();
+
+        [ObservableProperty]
+        private List<RecentOrderItem> recentOrders = new();
+
+        [ObservableProperty]
+        private bool isLoading = false;
+
+        [ObservableProperty]
+        private double totalRevenue = 0;
+
+        [ObservableProperty]
+        private int totalBills = 0;
 
         public DashboardViewModel(BillService billService)
         {
             _billService = billService;
-            _ = LoadRevenue(7);
-            _ = LoadDashboardData();
+            _ = InitializeDashboard();
+        }
+
+        private async Task InitializeDashboard()
+        {
+            IsLoading = true;
+            try
+            {
+                await LoadRevenue(7);
+                await LoadDashboardData();
+            }
+            catch (Exception ex)
+            {
+                // Log error if needed
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         public async Task LoadRevenue(int days)
         {
-            var today = DateTime.Today;
-            var fromDate = today.AddDays(-days + 1);
-
-            var bills = await _billRepo.GetByDate(fromDate, today);
-            var paidBills = bills.Where(b => b.Status == 1);
-
-            var values = new List<double>();
-            var labels = new List<string>();
-
-            for (int i = 0; i < days; i++)
+            try
             {
-                var date = fromDate.AddDays(i);
+                var today = DateTime.Today;
+                var fromDate = today.AddDays(-days + 1);
 
-                var revenue = paidBills
-                    .Where(b => b.DateCheckIn.Date == date.Date)
-                    .Sum(b => b.TotalAmount);
+                var bills = await _billService.GetRevenueByDateAsync(fromDate, today);
+                var billList = bills.ToList();
 
-                values.Add(revenue);
-                labels.Add(date.ToString("dd/MM"));
-            }
+                var paidBills = billList.Where(b => b.Status == 1).ToList();
 
-            SeriesCollection = new ISeries[]
-            {
-                new LineSeries<double>
+                var values = new List<double>();
+                var labels = new List<string>();
+
+                // Calculate total revenue for the period
+                double periodRevenue = 0;
+
+                for (int i = 0; i < days; i++)
                 {
-                    Name = "Doanh thu",
-                    Values = values
-                }
-            };  
+                    var date = fromDate.AddDays(i);
 
-            Labels = labels.ToArray();
+                    var revenue = paidBills
+                        .Where(b => b.DateCheckIn.Date == date.Date)
+                        .Sum(b => b.TotalAmount);
+
+                    values.Add(revenue);
+                    labels.Add(date.ToString("dd/MM"));
+                    periodRevenue += revenue;
+                }
+
+                SeriesCollection = new ISeries[]
+                {
+                    new LineSeries<double>
+                    {
+                        Name = "Doanh thu",
+                        Values = values
+                    }
+                };
+
+                Labels = labels.ToArray();
+                TotalRevenue = periodRevenue;
+                TotalBills = paidBills.Count;
+            }
+            catch (Exception ex)
+            {
+                // Log error if needed
+            }
         }
 
         [RelayCommand]
@@ -102,19 +148,30 @@ namespace Client.ViewModels
             await LoadRevenue(90);
         }
 
-        [ObservableProperty]
-        private List<TopSellingProductItem> topSellingProducts = new();
-
-        [ObservableProperty]
-        private List<Product> lowStockProducts = new();
-
-        [ObservableProperty]
-        private List<RecentOrderItem> recentOrders = new();
-
         public async Task LoadDashboardData()
         {
-            TopSellingProducts = await _billService.GetTopSellingProductsAsync();
-            RecentOrders = await _billService.GetRecentOrderDetailsAsync();
+            try
+            {
+                // Load top 5 selling products
+                var topProducts = await _billService.GetTopSellingProductsAsync(top: 5);
+                TopSellingProducts = topProducts ?? new();
+
+                // Load recent 3 orders
+                var recentOrdersList = await _billService.GetRecentOrderDetailsAsync(top: 3);
+                RecentOrders = recentOrdersList ?? new();
+            }
+            catch (Exception ex)
+            {
+                // Log error if needed
+                TopSellingProducts = new();
+                RecentOrders = new();
+            }
+        }
+
+        [RelayCommand]
+        public async Task RefreshDashboard()
+        {
+            await InitializeDashboard();
         }
     }
 }
