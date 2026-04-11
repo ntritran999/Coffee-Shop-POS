@@ -98,10 +98,23 @@ namespace Client.ViewModels
                 try
                 {
                     Product? updatedProduct = dlg.Product;
+                    if (updatedProduct == null)
+                    {
+                        return;
+                    }
+
                     var success = await _productService.UpdateProduct(updatedProduct);
                     if (!success)
                     {
                         await ShowErrorAsync("Cập nhật sản phẩm thất bại.");
+                        return;
+                    }
+
+                    var existingIndex = Products?.ToList().FindIndex(p => p.ProductID == updatedProduct.ProductID) ?? -1;
+                    if (existingIndex >= 0)
+                    {
+                        Products[existingIndex] = updatedProduct;
+                        SelectedProduct = updatedProduct;
                     }
                 }
                 catch (Exception ex)
