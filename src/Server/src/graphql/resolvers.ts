@@ -2,6 +2,9 @@ import { checkHealth } from "../services/health.service.js";
 import * as AuthMiddleware from "../middlewares/auth.middleware.js";
 import * as AuthService from "../services/auth.service.js";
 import * as AccountService from "../services/account.service.js";
+import * as CategoryService from "../services/category.service.js";
+import * as ProductService from "../services/product.service.js";
+import * as TableService from "../services/table.service.js";
 import * as BillService from "../services/bill.service.js";
 
 export const resolvers = {
@@ -27,6 +30,26 @@ export const resolvers = {
     },
     account: async (parent: any, args: any, context: any, info: any) => {
       return await AccountService.getById(args.Username);
+    },
+    categories: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireAuth(context);
+      return await CategoryService.getCategories();
+    },
+    products: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireAuth(context);
+      return await ProductService.getProducts(args.CategoryID, args.Name);
+    },
+    product: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireAuth(context);
+      return await ProductService.getProductById(args.ProductID);
+    },
+    tables: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireAuth(context);
+      return await TableService.getTables(args.Status);
+    },
+    table: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireAuth(context);
+      return await TableService.getTableById(args.TableID);
     },
     bills: async (parent: any, args: any, context: any, info: any) => {
       AuthMiddleware.requireAuth(context);
@@ -56,6 +79,30 @@ export const resolvers = {
     deleteAccount: async (parent: any, args: any, context: any, info: any) => {
       AuthMiddleware.requireRole(context, "Manager");
       return await AccountService.deleteAccount(args.Username);
+    },
+    createProduct: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await ProductService.createProduct(args.data);
+    },
+    updateProduct: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await ProductService.updateProduct(args.ProductID, args.data ?? {});
+    },
+    deleteProduct: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await ProductService.deleteProduct(args.ProductID);
+    },
+    createTable: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await TableService.createTable(args.data.TableName, args.data.Status);
+    },
+    updateTable: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await TableService.updateTable(args.TableID, args.data ?? {});
+    },
+    deleteTable: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await TableService.deleteTable(args.TableID);
     },
     createBill: async (parent: any, args: any, context: any, info: any) => {
       AuthMiddleware.requireAuth(context);
