@@ -19,6 +19,8 @@
     <None Remove="Assets\ProductSource\3.png" />
     <None Remove="Assets\ProductSource\4.png" />
     <None Remove="Assets\ProductSource\5.png" />
+    <None Remove="Views\Forms\ConfirmForm.xaml" />
+    <None Remove="Views\Forms\ProductForm.xaml" />
     <None Remove="Views\ViewProduct.xaml" />
     <None Remove="Views\OrderListPage.xaml" />
     <None Remove="Views\POSPage.xaml" />
@@ -65,6 +67,7 @@
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.73.0-alpha" />
@@ -77,6 +80,12 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\Forms\ConfirmForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Forms\ProductForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
     <ItemGroup>
 	    <Page Update="Views\DashboardPage.xaml">

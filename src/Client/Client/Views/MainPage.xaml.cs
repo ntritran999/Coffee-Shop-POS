@@ -19,7 +19,6 @@ namespace Client.Views
             { "TablePage",  (typeof(TablePage), "Quản lý bàn") },
             { "AIToolPage",  (typeof(AIToolPage), "Trợ lý AI") },
             { "ProductPage", (typeof(ViewProduct), "Sản phẩm") }
-
         };
 
         public MainPage()

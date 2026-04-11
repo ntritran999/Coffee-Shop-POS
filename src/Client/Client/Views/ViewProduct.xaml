@@ -132,11 +132,11 @@
         </StackPanel>
 
         <!-- Content -->
-        <StackPanel Grid.Column="1" Background="Gray">
+        <StackPanel Grid.Column="1" Background="#fbfaf8">
             <!-- Header -->
             <StackPanel Orientation="Horizontal" Margin="10">
                 <TextBox PlaceholderText="Tìm kiếm..." Width="200"/>
-                <Button Content="Thêm sản phẩm" Margin="10,0"/>
+                <Button Content="Thêm sản phẩm" Margin="10,0" Click="AddProduct_Click"/>
             </StackPanel>
 
             <!-- Product Grid -->
@@ -162,13 +162,17 @@
                         Visibility="{x:Bind ProductView.HasSelected, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <TextBlock Text="Chi tiết sản phẩm" FontSize="30" Foreground="Black" Margin="10"/>
                 <TextBlock Text="Thông tin chi tiết về sản phẩm đã chọn" FontSize="20" Foreground="Black" Margin="10,0"/>
-                 <!--Product Details--> 
+                 <!--Product Details-->
                 <StackPanel Margin="10">
                     <Image Source="{x:Bind ProductView.SelectedProduct.Image, Mode=OneWay}" Width="200"/>
                     <TextBlock Text="{x:Bind ProductView.SelectedProduct.Name, Mode=OneWay}" FontSize="24" FontWeight="Bold" Margin="0,10" Foreground="Black"/>
                     <TextBlock Text="{x:Bind ProductView.SelectedProduct.Price, Mode=OneWay, Converter={StaticResource Price}}" FontSize="20" Foreground="Orange"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Xóa" Click="DeleteProduct_Click" Background="White" Foreground="Black"></Button>
+                        <Button Content="Sửa" Click="EditProduct_Click" Background="Orange" Foreground="White"></Button>
+                    </StackPanel>
                 </StackPanel>
-                
             </StackPanel>
         </StackPanel>
     </Grid>
