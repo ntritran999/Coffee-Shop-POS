@@ -65,6 +65,8 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.251219" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.251219" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
@@ -75,6 +77,9 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Page Update="Views\Forms\ConfirmForm.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

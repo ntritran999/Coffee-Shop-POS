@@ -45,7 +45,15 @@ namespace Client.Repositories
 
         public Task<IEnumerable<Product>> GetAll()
         {
-            return Task.FromResult<IEnumerable<Product>>(_products);
+            return Task.FromResult<IEnumerable<Product>>([
+                new Product() { ProductID = 1, Name = "Product 1", Price = 10000, Image = "/Assets/ProductSource/1.png", CategoryID = 1 },
+                new Product() { ProductID = 2, Name = "Product 2", Price = 45000, Image = "/Assets/ProductSource/2.png", CategoryID = 1 },
+                new Product() { ProductID = 3, Name = "Product 3", Price = 55000, Image = "/Assets/ProductSource/3.png", CategoryID = 2 },
+                new Product() { ProductID = 4, Name = "Product 4", Price = 20000, Image = "/Assets/ProductSource/4.png", CategoryID = 2 },
+                new Product() { ProductID = 5, Name = "Product 5", Price = 32000, Image = "/Assets/ProductSource/5.png", CategoryID = 3 },
+
+            ]);
+            //return Task.FromResult<IEnumerable<Product>>(_products);
         }
 
         public Task<IEnumerable<Product>> GetByCategory(string categoryId)

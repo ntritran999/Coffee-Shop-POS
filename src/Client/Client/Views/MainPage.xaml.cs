@@ -17,7 +17,8 @@ namespace Client.Views
             { "POSPage", (typeof(POSPage), "Bán hàng") },
             { "OrderPage",  (typeof(OrderListPage), "Danh sách đơn hàng") },
             { "TablePage",  (typeof(TablePage), "Quản lý bàn") },
-            { "ProductPage",  (typeof(ViewProduct), "Sản phẩm") },
+            { "AIToolPage",  (typeof(AIToolPage), "Trợ lý AI") },
+            { "ProductPage", (typeof(ViewProduct), "Sản phẩm") }
         };
 
         public MainPage()
