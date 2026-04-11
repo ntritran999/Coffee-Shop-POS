@@ -21,7 +21,7 @@ namespace Client.Repositories
             var request = new GraphQLRequest
             {
                 query = @"
-                mutation($data: CreateTableInput) {
+                mutation($data: CreateTableInput!) {
                   createTable(data: $data) {
                     TableID
                     TableName
@@ -145,7 +145,7 @@ namespace Client.Repositories
             var request = new GraphQLRequest
             {
                 query = @"
-                mutation($TableID: Int!, $data: UpdateTableInput) {
+                mutation($TableID: Int!, $data: UpdateTableInput!) {
                   updateTable(TableID: $TableID, data: $data) {
                     TableID
                   }

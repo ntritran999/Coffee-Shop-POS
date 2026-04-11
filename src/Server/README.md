@@ -21,6 +21,7 @@ Set `.env` like this:
 ```env
 DATABASE_URL="postgresql://pooled-supabase-url:6543/postgres?pgbouncer=true"
 PORT=5000
+SECRET_KEY="replace-with-a-strong-secret"
 ```
 
 `DATABASE_URL` is used for both app runtime and Prisma CLI commands in this setup.
@@ -60,6 +61,10 @@ npx prisma studio
 ## API
 
 - `GET /api/health`
+
+GraphQL endpoint:
+
+- `POST /graphql`
 
 ## Notes
 

@@ -75,6 +75,7 @@ namespace Client
             services.AddTransient<CategoryViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<AccountViewModel>();
+            services.AddTransient<DashboardViewModel>();
 
             Services = services.BuildServiceProvider();
             InitializeComponent();
