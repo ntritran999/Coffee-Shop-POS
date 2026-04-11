@@ -5,10 +5,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Client.Views"
     xmlns:vm="using:Client.ViewModels"
+    xmlns:converters="using:Client.Converters"
+    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="#F5F5F5">
+
+    <Page.Resources>
+        <converters:FilterStateConverter x:Key="BorderActiveConverter" ActiveColorHex="#D97724" InactiveColorHex="#00000000" />
+        <converters:FilterStateConverter x:Key="TextActiveConverter" ActiveColorHex="#D97724" InactiveColorHex="#444444" />
+    </Page.Resources>
+
+
 
     <ScrollViewer Padding="30">
         <StackPanel Spacing="25">
@@ -28,15 +37,25 @@
                 <!-- Time filter + Date range -->
                 <Grid>
                     <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Content="Ngày" Padding="20,8" CornerRadius="12"
-                                Command="{x:Bind ViewModel.SelectTimeFilterCommand}" CommandParameter="Ngày"/>
-                        <Button Content="Tuần" Padding="20,8" CornerRadius="12"
-                                Command="{x:Bind ViewModel.SelectTimeFilterCommand}" CommandParameter="Tuần"/>
-                        <Button Content="Tháng" Padding="20,8" CornerRadius="12"
-                                Foreground="#D97724" BorderBrush="#D97724" BorderThickness="1"
-                                Command="{x:Bind ViewModel.SelectTimeFilterCommand}" CommandParameter="Tháng"/>
-                        <Button Content="Năm" Padding="20,8" CornerRadius="12"
-                                Command="{x:Bind ViewModel.SelectTimeFilterCommand}" CommandParameter="Năm"/>
+                        <Button Content="Ngày" Padding="20,8" CornerRadius="12" BorderThickness="1"
+                            Foreground="{x:Bind ViewModel.SelectedTimeFilter, Mode=OneWay, Converter={StaticResource TextActiveConverter}, ConverterParameter='0'}"
+                            BorderBrush="{x:Bind ViewModel.SelectedTimeFilter, Mode=OneWay, Converter={StaticResource BorderActiveConverter}, ConverterParameter='0'}"
+                            Command="{x:Bind ViewModel.SelectTimeFilterCommand}" CommandParameter="Ngày"/>  
+
+                        <Button Content="Tuần" Padding="20,8" CornerRadius="12" BorderThickness="1"
+                            Foreground="{x:Bind ViewModel.SelectedTimeFilter, Mode=OneWay, Converter={StaticResource TextActiveConverter}, ConverterParameter='1'}"
+                            BorderBrush="{x:Bind ViewModel.SelectedTimeFilter, Mode=OneWay, Converter={StaticResource BorderActiveConverter}, ConverterParameter='1'}"
+                            Command="{x:Bind ViewModel.SelectTimeFilterCommand}" CommandParameter="Tuần"/>
+
+                        <Button Content="Tháng" Padding="20,8" CornerRadius="12" BorderThickness="1"
+                            Foreground="{x:Bind ViewModel.SelectedTimeFilter, Mode=OneWay, Converter={StaticResource TextActiveConverter}, ConverterParameter='2'}"
+                            BorderBrush="{x:Bind ViewModel.SelectedTimeFilter, Mode=OneWay, Converter={StaticResource BorderActiveConverter}, ConverterParameter='2'}"
+                            Command="{x:Bind ViewModel.SelectTimeFilterCommand}" CommandParameter="Tháng"/>
+
+                        <Button Content="Năm" Padding="20,8" CornerRadius="12" BorderThickness="1"
+                            Foreground="{x:Bind ViewModel.SelectedTimeFilter, Mode=OneWay, Converter={StaticResource TextActiveConverter}, ConverterParameter='3'}"
+                            BorderBrush="{x:Bind ViewModel.SelectedTimeFilter, Mode=OneWay, Converter={StaticResource BorderActiveConverter}, ConverterParameter='3'}"
+                            Command="{x:Bind ViewModel.SelectTimeFilterCommand}" CommandParameter="Năm"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="10">
@@ -229,14 +248,11 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Grid.Column="0" Width="10" Height="10" VerticalAlignment="Center">
-                                            <Ellipse.Fill>
-                                                <SolidColorBrush Color="{x:Bind ColorHex, Mode=OneWay}"/>
-                                            </Ellipse.Fill>
-                                        </Ellipse>
+                                        <Ellipse Grid.Column="0" Width="10" Height="10" VerticalAlignment="Center"
+                                            Fill="{Binding ColorHex}" />
                                         <TextBlock Grid.Column="1" Text="{x:Bind Name, Mode=OneWay}" Margin="10,0,0,0" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center">
-                                            <Run Text="{x:Bind Percentage, Mode=OneWay}"/><Run Text="%"/>
+                                            <Run Text="{x:Bind Percentage.ToString(), Mode=OneWay}"/><Run Text="%"/>
                                         </TextBlock>
                                     </Grid>
                                 </DataTemplate>

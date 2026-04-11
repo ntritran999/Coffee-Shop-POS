@@ -28,7 +28,7 @@ namespace Client.ViewModels
     public partial class DashboardViewModel : ObservableObject
     {
         private readonly IBillRepository _billRepo = new MockBillRepository();
-        private readonly BillService _billService = new();
+        private readonly BillService _billService;
 
         [ObservableProperty]
         private ISeries[] seriesCollection;
@@ -39,8 +39,9 @@ namespace Client.ViewModels
         [ObservableProperty]
         private TimeRange selectedRange;
 
-        public DashboardViewModel()
+        public DashboardViewModel(BillService billService)
         {
+            _billService = billService;
             _ = LoadRevenue(7);
             _ = LoadDashboardData();
         }

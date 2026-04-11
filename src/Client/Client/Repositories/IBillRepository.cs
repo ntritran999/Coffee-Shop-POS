@@ -9,6 +9,6 @@ namespace Client.Repositories
     {
         Task<IEnumerable<Bill>> GetByDate(DateTime fromDate, DateTime toDate);
         Task<IEnumerable<Bill>> GetByStatus(int status);
-        Task<Bill?> GetByTable(string tableId);
+        Task<IEnumerable<Bill>> GetByTable(string tableId);
     }
 }
