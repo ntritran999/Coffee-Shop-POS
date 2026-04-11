@@ -1,44 +1,39 @@
 using Client.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace Client.Repositories
 {
-    public class BillRepository : IBillRepository
+    public class TableRepository : ITableRepository
     {
         private readonly HttpClient _httpClient;
 
-        public BillRepository(HttpClient httpClient)
+        public TableRepository(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public async Task<Bill> Add(Bill item)
+        public async Task<Table> Add(Table item)
         {
             var request = new GraphQLRequest
             {
                 query = @"
-                mutation($data: CreateBillInput) {
-                  createBill(data: $data) {
-                    BillID
-                    DateCheckIn
-                    DateCheckOut
+                mutation($data: CreateTableInput!) {
+                  createTable(data: $data) {
                     TableID
+                    TableName
                     Status
-                    TotalAmount
-                    Discount
                   }
                 }",
                 variables = new
                 {
                     data = new
                     {
-                        TableID = item.TableID,
-                        Discount = item.Discount
+                        TableName = item.TableName,
+                        Status = item.Status
                     }
                 }
             };
@@ -48,14 +43,14 @@ namespace Client.Repositories
                 var response = await _httpClient.PostAsJsonAsync("", request);
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Bill>>>();
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Table>>>();
 
                 if (result?.errors != null && result.errors.Count > 0)
                 {
                     return null;
                 }
 
-                return result?.data?["createBill"];
+                return result?.data?["createTable"];
             }
             catch (Exception)
             {
@@ -68,20 +63,16 @@ namespace Client.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Bill>> GetAll()
+        public async Task<IEnumerable<Table>> GetAll()
         {
             var request = new GraphQLRequest
             {
                 query = @"
                 query {
-                  bills {
-                    BillID
-                    DateCheckIn
-                    DateCheckOut
+                  tables {
                     TableID
+                    TableName
                     Status
-                    TotalAmount
-                    Discount
                   }
                 }"
             };
@@ -89,14 +80,14 @@ namespace Client.Repositories
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("", request);
-                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, List<Bill>>>>();
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, List<Table>>>>();
 
                 if (result?.errors != null && result.errors.Count > 0)
                 {
                     return [];
                 }
 
-                return result?.data?["bills"] ?? [];
+                return result?.data?["tables"] ?? [];
             }
             catch (Exception)
             {
@@ -104,37 +95,18 @@ namespace Client.Repositories
             }
         }
 
-        public Task<IEnumerable<Bill>> GetByDate(DateTime fromDate, DateTime toDate)
+        public async Task<Table?> GetById(string itemId)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Bill?> GetById(string itemId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Bill>> GetByStatus(int status)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<Bill>> GetByTable(string tableId)
-        {
-            if (string.IsNullOrEmpty(tableId) || !int.TryParse(tableId, out int id)) return [];
+            if (string.IsNullOrEmpty(itemId) || !int.TryParse(itemId, out int id)) return null;
 
             var request = new GraphQLRequest
             {
                 query = @"
-                query($TableID: Int) {
-                  bills(TableID: $TableID, Status: 0) {
-                    BillID
-                    DateCheckIn
-                    DateCheckOut
+                query($TableID: Int!) {
+                  table(TableID: $TableID) {
                     TableID
+                    TableName
                     Status
-                    TotalAmount
-                    Discount
                   }
                 }",
                 variables = new { TableID = id }
@@ -143,24 +115,29 @@ namespace Client.Repositories
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("", request);
-                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, List<Bill>>>>();
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Table>>>();
 
                 if (result?.errors != null && result.errors.Count > 0)
                 {
-                    return [];
+                    return null;
                 }
 
-                return result?.data?["bills"] ?? [];
+                return result?.data?["table"];
             }
             catch (Exception)
             {
-                return [];
+                return null;
             }
         }
 
-        public async Task<bool> Update(Bill item)
+        public Task<IEnumerable<Table>> GetByStatus(int status)
         {
-            if (item.BillID <= 0)
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> Update(Table item)
+        {
+            if (item.TableID <= 0)
             {
                 return false;
             }
@@ -168,20 +145,18 @@ namespace Client.Repositories
             var request = new GraphQLRequest
             {
                 query = @"
-                mutation($BillID: Int!, $data: UpdateBillInput) {
-                  updateBill(BillID: $BillID, data: $data) {
-                    BillID
+                mutation($TableID: Int!, $data: UpdateTableInput!) {
+                  updateTable(TableID: $TableID, data: $data) {
+                    TableID
                   }
                 }",
                 variables = new
                 {
-                    BillID = item.BillID,
+                    TableID = item.TableID,
                     data = new
                     {
-                        TableID = item.TableID,
-                        Discount = item.Discount,
-                        Status = item.Status,
-                        DateCheckOut = item.DateCheckOut.HasValue ? item.DateCheckOut.Value.ToString("o", CultureInfo.InvariantCulture) : null
+                        TableName = item.TableName,
+                        Status = item.Status
                     }
                 }
             };
@@ -189,15 +164,15 @@ namespace Client.Repositories
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("", request);
-                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Bill>>>();
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Table>>>();
 
                 if (result?.errors != null && result.errors.Count > 0)
                 {
                     return false;
                 }
 
-                var updated = result?.data?["updateBill"];
-                return updated?.BillID > 0;
+                var updated = result?.data?["updateTable"];
+                return updated?.TableID > 0;
             }
             catch (Exception)
             {

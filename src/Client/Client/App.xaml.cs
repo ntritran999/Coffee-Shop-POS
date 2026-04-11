@@ -58,6 +58,7 @@ namespace Client
             services.AddSingleton<IProductRepository, MockProductRepoitory>();
             services.AddSingleton<IBillInfoRepository, BillInfoRepository>();
             services.AddSingleton<IBillRepository, BillRepository>();
+            services.AddSingleton<ITableRepository, TableRepository>();
             services.AddSingleton<IAccountRepository, ApiAccountRepository>();
 
 
@@ -66,6 +67,7 @@ namespace Client
             services.AddSingleton<GeminiService>();
             services.AddSingleton<ProductService>();
             services.AddSingleton<BillService>();
+            services.AddSingleton<TableService>();
 
             services.AddTransient<POSViewModel>();
             services.AddTransient<OrderViewModel>();
@@ -73,6 +75,7 @@ namespace Client
             services.AddTransient<CategoryViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<AccountViewModel>();
+            services.AddTransient<DashboardViewModel>();
 
             Services = services.BuildServiceProvider();
             InitializeComponent();

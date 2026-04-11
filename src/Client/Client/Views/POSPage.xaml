@@ -147,12 +147,14 @@
                                 <FontIcon Glyph="&#xF0E2;" Margin="0,0,8,0"/>
                                 <TextBlock Text="Vị trí"/>
                             </StackPanel>
-                            <ComboBox Width="200" SelectedIndex="0">
-                                <x:String>Blue</x:String>
-                                <x:String>Green</x:String>
-                                <x:String>Red</x:String>
-                                <x:String>Yellow</x:String>
-                            </ComboBox>
+                        <ComboBox Width="200" SelectedItem="{x:Bind ViewModel.SelectedTable, Mode=TwoWay}"
+                                      ItemsSource="{x:Bind ViewModel.Tables, Mode=OneWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TableName}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                         </StackPanel>
 
                         <Grid Grid.Row="1">

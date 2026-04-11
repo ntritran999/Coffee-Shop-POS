@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,9 +17,16 @@ namespace Client.ViewModels
         private readonly CategoryService _categoryService;
         private readonly ProductService _productService;
         private readonly BillService _billService;
+        private readonly TableService _tableService;
 
         [ObservableProperty]
         public partial ObservableCollection<Category> Categories { get; private set; }
+
+        [ObservableProperty]
+        public partial ObservableCollection<Table> Tables {  get; private set; }
+
+        [ObservableProperty]
+        public partial Table SelectedTable { get; set; }
         
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FilteredProducts))]
@@ -46,15 +54,19 @@ namespace Client.ViewModels
 
         public POSViewModel(CategoryService categoryService,
                             ProductService productService,
-                            BillService billService) 
+                            BillService billService,
+                            TableService tableService) 
         {
             _categoryService = categoryService;
             _productService = productService;
             _billService = billService;
+            _tableService = tableService;
 
             Categories = [];
             Products = [];
             SelectedProducts = [];
+            Tables = [];
+            SelectedTable = new();
 
             LoadCommand = new AsyncRelayCommand(LoadAsync);
             LoadCommand.Execute(null);
@@ -89,8 +101,10 @@ namespace Client.ViewModels
             {
                 var cats = await _categoryService.GetAllCategories();
                 var pros = await _productService.GetAllProducts();
+                var tabs = await _tableService.GetAllTables();
 
                 Categories = new ObservableCollection<Category>(cats);
+                Tables = new ObservableCollection<Table>(tabs);
                 Products = [.. pros];
 
                 Categories.Insert(0, new Category
@@ -99,11 +113,18 @@ namespace Client.ViewModels
                     CategoryName = "Tất cả"
                 });
 
+                Tables.Insert(0, new Table
+                {
+                    TableID = -1,
+                    TableName = "Mang đi",
+                });
+
                 SelectedCategory = Categories.First();
+                SelectedTable = Tables.First();
             }
             catch (Exception ex)
             {
-
+                Debug.WriteLine($"Exception while loading: {ex.StackTrace}");
             }
         }
 
@@ -157,7 +178,7 @@ namespace Client.ViewModels
 
         private async Task SaveBillAsync()
         {
-            bool res = await _billService.SaveNewBill([.. SelectedProducts], false);
+            bool res = await _billService.SaveNewBill([.. SelectedProducts], SelectedTable, false);
             if (res)
             {
                 ShowSuccess = true;
@@ -170,7 +191,7 @@ namespace Client.ViewModels
 
         private async Task SavePaidBillAsync()
         {
-            bool res = await _billService.SaveNewBill([.. SelectedProducts], true);
+            bool res = await _billService.SaveNewBill([.. SelectedProducts], SelectedTable, true);
             if (res)
             {
                 ShowSuccess = true;

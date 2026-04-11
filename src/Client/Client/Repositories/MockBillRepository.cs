@@ -83,12 +83,12 @@ namespace Client.Repositories
             return Task.FromResult<IEnumerable<Bill>>(_bills.Where(b => b.Status == status));
         }
 
-        public Task<Bill?> GetByTable(string tableId)
+        public Task<IEnumerable<Bill?>> GetByTable(string tableId)
         {
-            if (!int.TryParse(tableId, out int tableIdInt)) return Task.FromResult<Bill?>(null);
+            if (!int.TryParse(tableId, out int tableIdInt)) return Task.FromResult<IEnumerable<Bill?>>(null!);
 
             return Task.FromResult(
-                _bills.FirstOrDefault(b => b.TableID == tableIdInt && b.Status == 0));
+                _bills.Where(b => b.TableID == tableIdInt && b.Status == 0).Cast<Bill?>());
         }
 
         public Task<bool> Update(Bill item)
