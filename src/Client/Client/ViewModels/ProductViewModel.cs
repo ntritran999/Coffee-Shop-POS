@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Client.ViewModels
@@ -36,29 +37,53 @@ namespace Client.ViewModels
 
         public async Task _loadProducts()
         {
-            var data = await _productService.GetAllProducts();
-            Products = new ObservableCollection<Product>(data);
-            SelectedProduct = null;
+            try
+            {
+                var data = await _productService.GetAllProducts();
+                Products = new ObservableCollection<Product>(data);
+                SelectedProduct = null;
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorAsync($"Không thể tải danh sách sản phẩm. {ex.Message}");
+            }
         }
 
         public async Task AddProduct()
         {
+            Products ??= new ObservableCollection<Product>();
+            var nextProductId = Products.Count == 0 ? 1 : Products.Max(p => p.ProductID) + 1;
+
             var newProduct = new Product
             {
+                ProductID = nextProductId,
                 Name = "Sản phẩm mới",
                 Price = 0,
-                Unit = 0,
-                CategoryID = 0,
+                Unit = 1,
+                CategoryID = 1,
                 Image = ""
             };
+
             var dlg = new ProductForm();
             dlg.SetProduct(newProduct, isEdit: false);
             var result = await dlg.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                newProduct = dlg.Product;
-                await _productService.AddProduct(newProduct);
-                Products.Add(newProduct);
+                try
+                {
+                    newProduct = dlg.Product;
+                    var createdProduct = await _productService.AddProduct(newProduct);
+                    if (createdProduct.ProductID <= 0)
+                    {
+                        createdProduct.ProductID = nextProductId;
+                    }
+
+                    Products.Add(createdProduct);
+                }
+                catch (Exception ex)
+                {
+                    await ShowErrorAsync($"Lỗi khi tạo sản phẩm qua GraphQL: {ex.Message}");
+                }
             }
         }
 
@@ -70,8 +95,19 @@ namespace Client.ViewModels
             var result = await dlg.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                Product? updatedProduct = dlg.Product;
-                await _productService.UpdateProduct(updatedProduct);
+                try
+                {
+                    Product? updatedProduct = dlg.Product;
+                    var success = await _productService.UpdateProduct(updatedProduct);
+                    if (!success)
+                    {
+                        await ShowErrorAsync("Cập nhật sản phẩm thất bại.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await ShowErrorAsync($"Lỗi khi cập nhật sản phẩm qua GraphQL: {ex.Message}");
+                }
             }
         }
 
@@ -83,9 +119,36 @@ namespace Client.ViewModels
             var result = await dlg.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                await _productService.DeleteProduct(SelectedProduct.ProductID);
-                Products.Remove(SelectedProduct);
+                try
+                {
+                    var success = await _productService.DeleteProduct(SelectedProduct.ProductID);
+                    if (success)
+                    {
+                        Products.Remove(SelectedProduct);
+                    }
+                    else
+                    {
+                        await ShowErrorAsync("Xóa sản phẩm thất bại.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await ShowErrorAsync($"Lỗi khi xóa sản phẩm qua GraphQL: {ex.Message}");
+                }
             }
+        }
+
+        private static async Task ShowErrorAsync(string message)
+        {
+            var errorDialog = new ContentDialog
+            {
+                XamlRoot = App.ActiveWindow!.Content.XamlRoot,
+                Title = "Thông báo lỗi",
+                Content = message,
+                PrimaryButtonText = "Đóng"
+            };
+
+            await errorDialog.ShowAsync();
         }
     }
 }

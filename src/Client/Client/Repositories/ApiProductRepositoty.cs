@@ -15,7 +15,8 @@ namespace Client.Repositories
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = null,
         };
 
         public ApiProductRepository(HttpClient httpClient)
@@ -31,8 +32,12 @@ namespace Client.Repositories
                 variables = variables ?? new { }
             };
 
-            var response = await _httpClient.PostAsJsonAsync("", request).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsJsonAsync("", request, JsonOptions).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    throw new HttpRequestException($"GraphQL request failed with status {(int)response.StatusCode}: {errorContent}");
+            }
 
             var result = await response.Content
                 .ReadFromJsonAsync<GraphQLResponse<Dictionary<string, JsonElement>>>(JsonOptions)
@@ -118,11 +123,11 @@ namespace Client.Repositories
             {
                 data = new
                 {
-                    item.Name,
-                    item.Price,
-                    item.Unit,
-                    item.CategoryID,
-                    item.Image
+                    Name = item.Name,
+                    Price = item.Price,
+                    Unit = item.Unit,
+                    CategoryID = item.CategoryID,
+                    Image = item.Image,
                 }
             };
 
@@ -152,11 +157,11 @@ namespace Client.Repositories
                 productId = item.ProductID,
                 data = new
                 {
-                    item.Name,
-                    item.Price,
-                    item.Unit,
-                    item.CategoryID,
-                    item.Image
+                    Name = item.Name,
+                    Price = item.Price,
+                    Unit = item.Unit,
+                    CategoryID = item.CategoryID,
+                    Image = item.Image,
                 }
             };
 
