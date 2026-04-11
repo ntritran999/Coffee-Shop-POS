@@ -21,6 +21,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Microsoft.Extensions.Configuration;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -34,6 +35,7 @@ namespace Client
     {
         private Window? _window;
         public static IServiceProvider? Services { get; private set; }
+        public static IConfiguration? Configuration { get; private set; }
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -41,6 +43,7 @@ namespace Client
         public App()
         {
             var services = new ServiceCollection();
+
 
             services.AddSingleton<HttpClient>(sp =>
             {
@@ -75,6 +78,12 @@ namespace Client
 
             Services = services.BuildServiceProvider();
             InitializeComponent();
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory) // Trỏ đúng vào thư mục chạy của WinUI 3
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            Configuration = builder.Build();
         }
 
         /// <summary>
