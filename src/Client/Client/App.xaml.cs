@@ -54,7 +54,7 @@ namespace Client
             });
 
 
-            services.AddSingleton<ICategoryRepository, MockCategoryRepository>();
+            services.AddSingleton<ICategoryRepository, ApiCategoryRepository>();
             services.AddSingleton<IProductRepository, ApiProductRepository>();
             services.AddSingleton<IBillInfoRepository, BillInfoRepository>();
             services.AddSingleton<IBillRepository, BillRepository>();

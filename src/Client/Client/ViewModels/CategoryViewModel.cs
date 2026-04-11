@@ -1,43 +1,71 @@
 ﻿using Client.Models;
 using Client.Services;
-using CommunityToolkit.Mvvm.ComponentModel; // Cần thiết
+using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Client.ViewModels
 {
-    // 1. Phải có partial. 
-    // Nếu BaseViewModel của bạn chưa kế thừa ObservableObject, hãy đổi sang kế thừa ObservableObject
     public partial class CategoryViewModel : ObservableObject
     {
-        // 2. Dùng private set để bảo vệ collection
-        public ObservableCollection<Category> Categories { get; private set; }
+        public ObservableCollection<Category> Categories { get; private set; } = new();
 
-        private readonly CategoryService _categoryService = new CategoryService();
-
-        // 3. Nếu bạn muốn theo dõi danh mục đang được chọn (SelectedIndex="0" trong XAML)
         [ObservableProperty]
         private Category? _selectedCategory;
 
-        public CategoryViewModel()
+        private readonly CategoryService _categoryService;
+
+        public CategoryViewModel(CategoryService categoryService)
         {
-            // Lấy dữ liệu từ service
-            var data = _categoryService.GetAllCategories().Result;
-
-            // Khởi tạo collection
-            Categories = new ObservableCollection<Category>(data);
-
-            // Chèn mục "Tất cả" vào đầu danh sách
-            Categories.Insert(0, new Category
-            {
-                CategoryID = 0,
-                CategoryName = "Tất cả"
-            });
-
-            // Mặc định chọn mục đầu tiên
+            _categoryService = categoryService;
+            // Initialize default "Tất cả" category
+            Categories.Add(new Category { CategoryID = 0, CategoryName = "Tất cả" });
             SelectedCategory = Categories.FirstOrDefault();
+            _ = LoadCategories();
+        }
+
+        public CategoryViewModel() : this(App.Services?.GetService<CategoryService>() ?? new CategoryService())
+        {
+        }
+
+        public async Task LoadCategories()
+        {
+            try
+            {
+                var data = await _categoryService.GetAllCategories();
+                
+                // Clear and reload with fresh data from API
+                Categories.Clear();
+                
+                // Add "Tất cả" category first
+                Categories.Add(new Category
+                {
+                    CategoryID = 0,
+                    CategoryName = "Tất cả"
+                });
+
+                // Add API data
+                foreach (var category in data)
+                {
+                    Categories.Add(category);
+                }
+
+                SelectedCategory = Categories.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading categories: {ex.Message}");
+                // Keep the default "Tất cả" category even if loading fails
+                if (Categories.Count == 0)
+                {
+                    Categories.Add(new Category { CategoryID = 0, CategoryName = "Tất cả" });
+                    SelectedCategory = Categories.FirstOrDefault();
+                }
+            }
         }
     }
 }

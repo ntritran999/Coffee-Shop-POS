@@ -33,13 +33,14 @@ namespace Client.Views
     public sealed partial class ViewProduct : Page
     {
         public ProductViewModel ProductView { get; set; }
-        public CategoryViewModel CategoryView { get; set; } = new();
+        public CategoryViewModel CategoryView { get; set; }
 
         public ViewProduct()
         {
             InitializeComponent();
 
             ProductView = App.Services?.GetService<ProductViewModel>() ?? new ProductViewModel();
+            CategoryView = App.Services?.GetService<CategoryViewModel>() ?? new CategoryViewModel();
 
             this.Loaded += (s, e) =>
             {

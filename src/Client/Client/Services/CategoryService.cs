@@ -1,5 +1,6 @@
 ﻿using Client.Models;
 using Client.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,9 +10,16 @@ namespace Client.Services
 {
     public class CategoryService
     {
-        private ICategoryRepository _category = new MockCategoryRepository();
+        private readonly ICategoryRepository _category;
 
-        public CategoryService() { }
+        public CategoryService(ICategoryRepository categoryRepository)
+        {
+            _category = categoryRepository;
+        }
+
+        public CategoryService() : this(App.Services?.GetService<ICategoryRepository>() ?? new MockCategoryRepository())
+        {
+        }
 
         public async Task<IEnumerable<Category>> GetAllCategories()
         {
