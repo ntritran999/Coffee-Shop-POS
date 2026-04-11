@@ -13,8 +13,19 @@
 
         <TextBox x:Name="NameBox" Header="Tên sản phẩm" Text="{x:Bind Product.Name, Mode=TwoWay}"/>
         <TextBox x:Name="PriceBox" Header="Giá" InputScope="Number" Text="{x:Bind Product.Price, Mode=TwoWay}"/>
-        <TextBox x:Name="CategoryID" Header="Category" Text="{x:Bind Product.CategoryID, Mode=TwoWay}"/>
-        <TextBox x:Name="ImageBox" Header="Ảnh (đường dẫn)" Text="{x:Bind Product.Image, Mode=TwoWay}"/>
-    
+        <TextBox x:Name="UnitBox" Header="Đơn vị" InputScope="Number" Text="{x:Bind Product.Unit, Mode=TwoWay}"/>
+        <TextBox x:Name="CategoryID" Header="Category" InputScope="Number" Text="{x:Bind Product.CategoryID, Mode=TwoWay}"/>
+
+        <TextBlock Text="Ảnh (URL hoặc đường dẫn file)"/>
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="ImageBox" Grid.Column="0" Text="{x:Bind Product.Image, Mode=TwoWay}"/>
+            <Button Grid.Column="1" Content="Chọn ảnh..." Click="PickImageButton_Click"/>
+        </Grid>
+
+        <TextBlock x:Name="ValidationErrorText" Foreground="Red" TextWrapping="WrapWholeWords" Visibility="Collapsed"/>
     </StackPanel>
 </ContentDialog>

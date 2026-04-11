@@ -1,6 +1,7 @@
 ﻿using Client.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,15 +13,18 @@ namespace Client.Repositories
     public class ApiProductRepository : IProductRepository
     {
         private readonly HttpClient _httpClient;
+        private readonly IImageUploadClient _imageUploadClient;
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = null,
         };
 
-        public ApiProductRepository(HttpClient httpClient)
+        public ApiProductRepository(HttpClient httpClient, IImageUploadClient imageUploadClient)
         {
             _httpClient = httpClient;
+            _imageUploadClient = imageUploadClient;
         }
 
         private async Task<JsonElement?> SendAsync(string query, object? variables, string fieldName)
@@ -31,8 +35,12 @@ namespace Client.Repositories
                 variables = variables ?? new { }
             };
 
-            var response = await _httpClient.PostAsJsonAsync("", request).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsJsonAsync("", request, JsonOptions).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    throw new HttpRequestException($"GraphQL request failed with status {(int)response.StatusCode}: {errorContent}");
+            }
 
             var result = await response.Content
                 .ReadFromJsonAsync<GraphQLResponse<Dictionary<string, JsonElement>>>(JsonOptions)
@@ -49,6 +57,23 @@ namespace Client.Repositories
             }
 
             return data;
+        }
+
+        private async Task<string?> ResolveImageValueAsync(string? imageValue)
+        {
+            if (string.IsNullOrWhiteSpace(imageValue))
+            {
+                return imageValue;
+            }
+
+            var normalized = imageValue.Trim();
+
+            if (File.Exists(normalized))
+            {
+                return await _imageUploadClient.UploadAsync(normalized).ConfigureAwait(false);
+            }
+
+            return normalized;
         }
 
         public async Task<IEnumerable<Product>> GetAll()
@@ -114,15 +139,17 @@ namespace Client.Repositories
                                 }
                               }";
 
+            var image = await ResolveImageValueAsync(item.Image).ConfigureAwait(false);
+
             var variables = new
             {
                 data = new
                 {
-                    item.Name,
-                    item.Price,
-                    item.Unit,
-                    item.CategoryID,
-                    item.Image
+                    Name = item.Name,
+                    Price = item.Price,
+                    Unit = item.Unit,
+                    CategoryID = item.CategoryID,
+                    Image = image,
                 }
             };
 
@@ -147,16 +174,18 @@ namespace Client.Repositories
                                 }
                               }";
 
+            var image = await ResolveImageValueAsync(item.Image).ConfigureAwait(false);
+
             var variables = new
             {
                 productId = item.ProductID,
                 data = new
                 {
-                    item.Name,
-                    item.Price,
-                    item.Unit,
-                    item.CategoryID,
-                    item.Image
+                    Name = item.Name,
+                    Price = item.Price,
+                    Unit = item.Unit,
+                    CategoryID = item.CategoryID,
+                    Image = image,
                 }
             };
 

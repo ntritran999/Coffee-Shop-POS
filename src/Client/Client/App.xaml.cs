@@ -54,8 +54,9 @@ namespace Client
             });
 
 
-            services.AddSingleton<ICategoryRepository, MockCategoryRepository>();
-            services.AddSingleton<IProductRepository, MockProductRepoitory>();
+            services.AddSingleton<IImageUploadClient, ImageUploadClient>();
+            services.AddSingleton<ICategoryRepository, ApiCategoryRepository>();
+            services.AddSingleton<IProductRepository, ApiProductRepository>();
             services.AddSingleton<IBillInfoRepository, BillInfoRepository>();
             services.AddSingleton<IBillRepository, BillRepository>();
             services.AddSingleton<ITableRepository, TableRepository>();
@@ -75,6 +76,7 @@ namespace Client
             services.AddTransient<CategoryViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<AccountViewModel>();
+            services.AddTransient<ProductViewModel>();
             services.AddTransient<DashboardViewModel>();
 
             Services = services.BuildServiceProvider();

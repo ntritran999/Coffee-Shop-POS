@@ -1,6 +1,7 @@
 ﻿using Client.Models;
 using Client.ViewModels;
 using Client.Views.Forms;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -31,11 +32,15 @@ namespace Client.Views
 
     public sealed partial class ViewProduct : Page
     {
-        public ProductViewModel ProductView { get; set; } = new();
-        public CategoryViewModel CategoryView { get; set; } = new();
+        public ProductViewModel ProductView { get; set; }
+        public CategoryViewModel CategoryView { get; set; }
+
         public ViewProduct()
         {
             InitializeComponent();
+
+            ProductView = App.Services?.GetService<ProductViewModel>() ?? new ProductViewModel();
+            CategoryView = App.Services?.GetService<CategoryViewModel>() ?? new CategoryViewModel();
 
             this.Loaded += (s, e) =>
             {

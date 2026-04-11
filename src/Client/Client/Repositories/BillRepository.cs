@@ -2,6 +2,7 @@ using Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -104,9 +105,49 @@ namespace Client.Repositories
             }
         }
 
-        public Task<IEnumerable<Bill>> GetByDate(DateTime fromDate, DateTime toDate)
+        public async Task<IEnumerable<Bill>> GetByDate(DateTime fromDate, DateTime toDate)
         {
-            throw new NotImplementedException();
+            var request = new GraphQLRequest
+            {
+                query = @"
+                query {
+                  bills {
+                    BillID
+                    DateCheckIn
+                    DateCheckOut
+                    TableID
+                    Status
+                    TotalAmount
+                    Discount
+                  }
+                }"
+            };
+
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("", request);
+                response.EnsureSuccessStatusCode();
+
+                var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, List<Bill>>>>();
+
+                if (result?.errors != null && result.errors.Count > 0)
+                {
+                    return Enumerable.Empty<Bill>();
+                }
+
+                var bills = result?.data?["bills"] ?? new List<Bill>();
+                
+                // Filter by date on client side since the GraphQL API may not support date filtering
+                var filtered = bills
+                    .Where(b => b.DateCheckIn >= fromDate && b.DateCheckIn <= toDate)
+                    .ToList();
+
+                return filtered;
+            }
+            catch (Exception ex)
+            {
+                return Enumerable.Empty<Bill>();
+            }
         }
 
         public Task<Bill?> GetById(string itemId)
