@@ -54,6 +54,7 @@ namespace Client
             });
 
 
+            services.AddSingleton<IImageUploadClient, ImageUploadClient>();
             services.AddSingleton<ICategoryRepository, ApiCategoryRepository>();
             services.AddSingleton<IProductRepository, ApiProductRepository>();
             services.AddSingleton<IBillInfoRepository, BillInfoRepository>();

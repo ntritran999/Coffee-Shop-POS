@@ -1,6 +1,7 @@
 ﻿using Client.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,6 +13,7 @@ namespace Client.Repositories
     public class ApiProductRepository : IProductRepository
     {
         private readonly HttpClient _httpClient;
+        private readonly IImageUploadClient _imageUploadClient;
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -19,9 +21,10 @@ namespace Client.Repositories
             PropertyNamingPolicy = null,
         };
 
-        public ApiProductRepository(HttpClient httpClient)
+        public ApiProductRepository(HttpClient httpClient, IImageUploadClient imageUploadClient)
         {
             _httpClient = httpClient;
+            _imageUploadClient = imageUploadClient;
         }
 
         private async Task<JsonElement?> SendAsync(string query, object? variables, string fieldName)
@@ -54,6 +57,23 @@ namespace Client.Repositories
             }
 
             return data;
+        }
+
+        private async Task<string?> ResolveImageValueAsync(string? imageValue)
+        {
+            if (string.IsNullOrWhiteSpace(imageValue))
+            {
+                return imageValue;
+            }
+
+            var normalized = imageValue.Trim();
+
+            if (File.Exists(normalized))
+            {
+                return await _imageUploadClient.UploadAsync(normalized).ConfigureAwait(false);
+            }
+
+            return normalized;
         }
 
         public async Task<IEnumerable<Product>> GetAll()
@@ -119,6 +139,8 @@ namespace Client.Repositories
                                 }
                               }";
 
+            var image = await ResolveImageValueAsync(item.Image).ConfigureAwait(false);
+
             var variables = new
             {
                 data = new
@@ -127,7 +149,7 @@ namespace Client.Repositories
                     Price = item.Price,
                     Unit = item.Unit,
                     CategoryID = item.CategoryID,
-                    Image = item.Image,
+                    Image = image,
                 }
             };
 
@@ -152,6 +174,8 @@ namespace Client.Repositories
                                 }
                               }";
 
+            var image = await ResolveImageValueAsync(item.Image).ConfigureAwait(false);
+
             var variables = new
             {
                 productId = item.ProductID,
@@ -161,7 +185,7 @@ namespace Client.Repositories
                     Price = item.Price,
                     Unit = item.Unit,
                     CategoryID = item.CategoryID,
-                    Image = item.Image,
+                    Image = image,
                 }
             };
 

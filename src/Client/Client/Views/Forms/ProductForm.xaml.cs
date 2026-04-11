@@ -13,6 +13,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Pickers;
 
 namespace Client.Views.Forms
 {
@@ -48,6 +49,32 @@ namespace Client.Views.Forms
             SecondaryButtonText = "Hủy";
         }
 
+        private async void PickImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new FileOpenPicker();
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.ActiveWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+            picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            picker.FileTypeFilter.Add(".jpg");
+            picker.FileTypeFilter.Add(".jpeg");
+            picker.FileTypeFilter.Add(".png");
+            picker.FileTypeFilter.Add(".gif");
+            picker.FileTypeFilter.Add(".webp");
+
+            var file = await picker.PickSingleFileAsync();
+            if (file == null)
+            {
+                return;
+            }
+
+            ImageBox.Text = file.Path;
+            Product ??= new Product();
+            Product.Image = file.Path;
+            ValidationErrorText.Text = string.Empty;
+            ValidationErrorText.Visibility = Visibility.Collapsed;
+        }
+
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             Product ??= new Product();
@@ -76,10 +103,16 @@ namespace Client.Views.Forms
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Product.Image) ||
-                !(Uri.TryCreate(Product.Image, UriKind.Absolute, out _) || Product.Image.StartsWith("/")))
+            var imageInput = Product.Image;
+            var validImageInput = !string.IsNullOrWhiteSpace(imageInput)
+                && (File.Exists(imageInput)
+                    || (Uri.TryCreate(imageInput, UriKind.Absolute, out var uri)
+                        && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+                    || imageInput.StartsWith("/"));
+
+            if (!validImageInput)
             {
-                ShowValidationError("ImageLink không hợp lệ. Vui lòng nhập URL đầy đủ hoặc đường dẫn bắt đầu bằng '/'.");
+                ShowValidationError("Image không hợp lệ. Nhập URL, đường dẫn bắt đầu bằng '/', hoặc đường dẫn file ảnh local tồn tại.");
                 args.Cancel = true;
                 return;
             }
