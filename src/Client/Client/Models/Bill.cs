@@ -18,5 +18,7 @@ namespace Client.Models
         public int Status { get; set; } // 0: Chưa thanh toán, 1: Đã thanh toán
         public double TotalAmount { get; set; }
         public double Discount { get; set; }
+
+        public List<BillInfo> BillInfo { get; set; } = new();
     }
 }

@@ -3,6 +3,7 @@ using Client.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Client.Services
 {
@@ -10,14 +11,19 @@ namespace Client.Services
     {
         private readonly IReportRepository _repository;
 
-        public ReportService()
+        public ReportService(IReportRepository repository)
         {
-            _repository = new MockReportRepository();
+            _repository = repository;
         }
 
-        public ReportSummary FetchReportMetrics(int timeFilter)
+        public async Task<ReportSummary> FetchReportMetricsAsync(int timeFilter)
         {
-            return _repository.GetReportData(timeFilter);
+            return await _repository.GetReportData(timeFilter);
+        }
+
+        public async Task<ReportSummary> FetchReportMetricsByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            return await _repository.GetReportDataByDateRangeAsync(fromDate, toDate);
         }
     }
 }

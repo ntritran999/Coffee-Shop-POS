@@ -62,6 +62,8 @@ namespace Client
             services.AddSingleton<ITableRepository, TableRepository>();
             services.AddSingleton<IAccountRepository, ApiAccountRepository>();
 
+            services.AddSingleton<IReportRepository, ApiReportRepository>();
+
 
             services.AddSingleton<AuthService>();
             services.AddSingleton<CategoryService>();
@@ -69,6 +71,7 @@ namespace Client
             services.AddSingleton<ProductService>();
             services.AddSingleton<BillService>();
             services.AddSingleton<TableService>();
+            services.AddSingleton<ReportService>();
 
             services.AddTransient<POSViewModel>();
             services.AddTransient<OrderViewModel>();
@@ -78,6 +81,7 @@ namespace Client
             services.AddTransient<AccountViewModel>();
             services.AddTransient<ProductViewModel>();
             services.AddTransient<DashboardViewModel>();
+            services.AddTransient<ReportViewModel>();
 
             Services = services.BuildServiceProvider();
             InitializeComponent();

@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Client.Repositories
 {
     public interface IReportRepository
     {
-        ReportSummary GetReportData(int timeFilter);
+        Task<ReportSummary> GetReportData(int timeFilter);
+        Task<ReportSummary> GetReportDataByDateRangeAsync(DateTime fromDate, DateTime toDate);
     }
 }
