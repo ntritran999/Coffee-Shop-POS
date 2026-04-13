@@ -11,6 +11,9 @@
 
     <Page.Resources>
         <converter:FormatPrice x:Key="FormattedPrice"/>
+        <converter:BillStatusIconConverter x:Key="BillStatusIcon"/>
+        <converter:BillStatusAllowChangeConverter x:Key="IsBillUpdateAllowed"/>
+        <converter:DateTimeStringConverter x:Key="DateTimeString"/>
     </Page.Resources>
     <Grid>
         <SplitView Name="orderSplitView"
@@ -126,13 +129,13 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Click="DeleteOrder_ClickAsync" Grid.Column="0" HorizontalAlignment="Stretch">
+                            <Button IsEnabled="{x:Bind ViewModel.SelectedOrderLine.StatusRaw, Converter={StaticResource IsBillUpdateAllowed}, Mode=OneWay}" Click="DeleteOrder_ClickAsync" Grid.Column="0" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE74D;" />
                                     <TextBlock Text="Huỷ đơn"/>
                                 </StackPanel>
                             </Button>
-                            <Button Command="{x:Bind ViewModel.PayOrderCommand}" Grid.Column="1" HorizontalAlignment="Stretch">
+                            <Button IsEnabled="{x:Bind ViewModel.SelectedOrderLine.StatusRaw, Converter={StaticResource IsBillUpdateAllowed}, Mode=OneWay}" Command="{x:Bind ViewModel.PayOrderCommand}" Grid.Column="1" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE8C7;" />
                                     <TextBlock Text="Thanh toán"/>
@@ -313,7 +316,7 @@
                                             <TextBlock Grid.Column="0" Text="{Binding BillID}"
                                    FontWeight="SemiBold"
                                    FontSize="13" VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding DateCheckIn}"
+                                            <TextBlock Grid.Column="1" Text="{Binding DateCheckIn, Converter={StaticResource DateTimeString}}"
                                    FontSize="13"
                                    VerticalAlignment="Center"/>
                                             <TextBlock Grid.Column="2" Text="{Binding TableName}"
@@ -333,7 +336,7 @@
                                             HorizontalAlignment="Center" Spacing="2" VerticalAlignment="Center">
                                                 <Button Background="Transparent" BorderThickness="0"
                                             Padding="6" CornerRadius="4" Click="Detail_Click">
-                                                    <FontIcon Glyph="&#xE70F;" FontSize="14" Foreground="#666"/>
+                                                    <FontIcon Glyph="{Binding StatusRaw, Converter={StaticResource BillStatusIcon}}" FontSize="14" Foreground="#666"/>
                                                 </Button>
                                             </StackPanel>
                                         </Grid>

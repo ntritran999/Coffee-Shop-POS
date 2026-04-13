@@ -45,7 +45,7 @@ namespace Client.Services
                 orderLines.Add(new()
                 {
                     BillID = order.BillID,
-                    DateCheckIn = order.DateCheckIn,
+                    DateCheckIn = order.DateCheckIn.ToLocalTime(),
                     TableID = tables[i]?.TableID,
                     TableName = tableName,
                     TotalPrice = (int)order.TotalAmount,
@@ -87,7 +87,7 @@ namespace Client.Services
             return new()
             {
                 BillID = orderLine.BillID,
-                DateCheckIn = orderLine.DateCheckIn,
+                DateCheckIn = orderLine.DateCheckIn.ToLocalTime(),
                 TableID = orderLine.TableID,
                 TableName = orderLine.TableName,
                 BillItems = billItems,
@@ -155,14 +155,18 @@ namespace Client.Services
 
         private async Task<bool> UpdateOrder(OrderDetail detail, int status)
         {
-            var res = await _billRepository.Update(new Bill()
+            var updatedBill = new Bill()
             {
                 BillID = detail.BillID,
                 TableID = detail.TableID,
                 Discount = detail.Discount,
                 Status = status,
-                DateCheckOut = DateTime.Now,
-            });
+            };
+            if (status == 1)
+            {
+                updatedBill.DateCheckOut = DateTime.Now;
+            }
+            var res = await _billRepository.Update(updatedBill);
 
             if (!res)
             {
