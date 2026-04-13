@@ -24,7 +24,7 @@
                                           TrueValue="Collapsed" 
                                           FalseValue="Visible"/>
 
-        <DataTemplate x:Name="ThumbnailTemplate" x:DataType="model:Product">
+        <DataTemplate x:Key="ThumbnailTemplate" x:DataType="model:Product">
             <Border Width="250" Margin="10" CornerRadius="10" Background="White">
                 <StackPanel>
                     <Image Source="{x:Bind Image, Mode=OneWay}" Width="120"/>
@@ -65,12 +65,17 @@
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <StackPanel Grid.Column="0" Background="#F5F5F5">
+        <Grid Grid.Column="0" Background="#F5F5F5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <TextBlock Text="Danh mục" FontSize="30" Foreground="Black" Margin="10"/>
-            <TextBlock Text="Phân loại thực đơn" FontSize="20" Foreground="Black" Margin="10,0"/>
+            <TextBlock Grid.Row="0" Text="Danh mục" FontSize="30" Foreground="Black" Margin="10"/>
+            <TextBlock Grid.Row="1" Text="Phân loại thực đơn" FontSize="20" Foreground="Black" Margin="10,0"/>
 
-            <ListView x:Name="CategoryList"
+            <ListView Grid.Row="2" x:Name="CategoryList"
                       ItemsSource="{x:Bind CategoryView.Categories}"
                       SelectedIndex="0"
                       ItemTemplate="{StaticResource CategoryTemplate}"
@@ -129,18 +134,23 @@
 
             </ListView>
 
-        </StackPanel>
+        </Grid>
 
         <!-- Content -->
-        <StackPanel Grid.Column="1" Background="#fbfaf8">
+        <Grid Grid.Column="1" Background="#fbfaf8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
             <!-- Header -->
-            <StackPanel Orientation="Horizontal" Margin="10">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
                 <TextBox PlaceholderText="Tìm kiếm..." Width="200"/>
                 <Button Content="Thêm sản phẩm" Margin="10,0" Click="AddProduct_Click"/>
             </StackPanel>
 
             <!-- Product Grid -->
-            <ListView Name="ProductList" ItemsSource="{x:Bind ProductView.Products, Mode=OneWay}" 
+            <ListView Grid.Row="1" Name="ProductList" ItemsSource="{x:Bind ProductView.Products, Mode=OneWay}" 
                       ItemTemplate="{StaticResource ThumbnailTemplate}"
                       SelectedItem="{x:Bind ProductView.SelectedProduct, Mode=TwoWay}">
 
@@ -151,7 +161,7 @@
                 </ListView.ItemsPanel>
                
             </ListView>
-        </StackPanel>
+        </Grid>
 
         <StackPanel Grid.Column="2" Background="#F5F5F5">
 

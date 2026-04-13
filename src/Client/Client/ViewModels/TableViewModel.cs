@@ -78,7 +78,7 @@ namespace Client.ViewModels
                 var table = await _tableService.AddTable(newTable);
                 if (table != null)
                 {
-                    Tables.Add(table);
+                    Tables.Insert(0, table);
                 }
                 else
                 {

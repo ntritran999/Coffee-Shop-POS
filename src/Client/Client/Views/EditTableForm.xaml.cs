@@ -28,6 +28,7 @@ namespace Client.Views
         public EditTableForm(Table table)
         {
             InitializeComponent();
+            EditItem.TableID = table.TableID;
             EditItem.TableName = table.TableName;
             EditItem.Status = table.Status;
         }

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Client.Repositories
@@ -46,7 +47,11 @@ namespace Client.Repositories
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("", request);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null
+                };
+                var response = await _httpClient.PostAsJsonAsync("", request, options);
                 response.EnsureSuccessStatusCode();
 
                 var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Bill>>>();
@@ -83,6 +88,14 @@ namespace Client.Repositories
                     Status
                     TotalAmount
                     Discount
+                    BillInfo {
+                      BillInfoID
+                      BillID
+                      ProductID
+                      Count
+                      Price
+                      Note
+                    }
                   }
                 }"
             };
@@ -119,6 +132,14 @@ namespace Client.Repositories
                     Status
                     TotalAmount
                     Discount
+                    BillInfo {
+                      BillInfoID
+                      BillID
+                      ProductID
+                      Count
+                      Price
+                      Note
+                    }
                   }
                 }"
             };
@@ -176,6 +197,14 @@ namespace Client.Repositories
                     Status
                     TotalAmount
                     Discount
+                    BillInfo {
+                      BillInfoID
+                      BillID
+                      ProductID
+                      Count
+                      Price
+                      Note
+                    }
                   }
                 }",
                 variables = new { TableID = id }
@@ -229,7 +258,11 @@ namespace Client.Repositories
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("", request);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null
+                };
+                var response = await _httpClient.PostAsJsonAsync("", request, options);
                 var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Bill>>>();
 
                 if (result?.errors != null && result.errors.Count > 0)
