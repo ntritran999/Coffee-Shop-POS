@@ -32,5 +32,10 @@ namespace Client.Views
             InitializeComponent();
             ViewModel = App.Services!.GetRequiredService<DashboardViewModel>();
         }
+
+        private void POS_Nav_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(POSPage));
+        }
     }
 }
