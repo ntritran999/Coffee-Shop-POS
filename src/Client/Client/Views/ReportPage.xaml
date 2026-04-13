@@ -59,11 +59,42 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="10">
-                        <CalendarDatePicker PlaceholderText="01/01/2024"/>
-                        <TextBlock Text="-" VerticalAlignment="Center"/>
-                        <CalendarDatePicker PlaceholderText="31/01/2024" Margin="0,0,20,0"/>
-                        <Button>
+
+                        <TextBlock Text="{x:Bind ViewModel.SelectedDateRangeText, Mode=OneWay}" 
+                                   VerticalAlignment="Center" 
+                                   Foreground="DimGray" 
+                                   FontStyle="Italic"
+                                   Margin="0,0,10,0"/>          
+
+                        <Button ToolTipService.ToolTip="Chọn khoảng thời gian tùy chỉnh">
                             <FontIcon Glyph="&#xE71C;" />
+                            <Button.Flyout>
+                                <Flyout>
+                                    <StackPanel Spacing="16" Width="240" Padding="4">
+                                        <TextBlock Text="Tùy chỉnh thời gian" FontWeight="Bold" FontSize="15"/>
+
+                                        
+
+                                        <CalendarDatePicker Header="Từ ngày" 
+                                            Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}"
+                                            DateFormat="{}{day.integer(2)}/{month.integer(2)}/{year.full}"
+                                            HorizontalAlignment="Stretch"/>
+
+                                        <CalendarDatePicker Header="Đến ngày" 
+                                            Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
+                                            DateFormat="{}{day.integer(2)}/{month.integer(2)}/{year.full}"
+                                            HorizontalAlignment="Stretch"/>
+
+                                        <Button Content="Áp dụng" 
+                                                Command="{x:Bind ViewModel.ApplyDateFilterCommand}" 
+                                                Background="#D97724" 
+                                                Foreground="White"
+                                                CornerRadius="8"
+                                                HorizontalAlignment="Right"
+                                                Margin="0,8,0,0"/>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
                         </Button>
                     </StackPanel>
                 </Grid>

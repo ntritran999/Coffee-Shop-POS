@@ -1,15 +1,21 @@
-using Microsoft.UI.Xaml.Controls;
+﻿using Client.Repositories;
 using Client.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Client.Views
 {
     public sealed partial class ReportPage : Page
     {
-        public ReportViewModel ViewModel { get; } = new ReportViewModel();
+        public ReportViewModel ViewModel { get; set; }
 
         public ReportPage()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+
+            ViewModel = App.Services!.GetRequiredService<ReportViewModel>();
+
+            this.DataContext = ViewModel;
         }
     }
 }
