@@ -39,7 +39,7 @@
                     <FontIcon Glyph="&#xE774;" FontSize="14" Foreground="#D97724"/>
                     <TextBlock Text="Địa chỉ Host (IP/Domain)" FontWeight="SemiBold" FontSize="14"/>
                 </StackPanel>
-                <TextBox Text="192.168.1.105" />
+                <TextBox x:Name="txtHost" Text="192.168.1.105" />
             </StackPanel>
 
             <StackPanel Spacing="15">
@@ -47,14 +47,14 @@
                     <FontIcon Glyph="&#xE943;" FontSize="14" Foreground="#D97724"/>
                     <TextBlock Text="Cổng (Port)" FontWeight="SemiBold" FontSize="14"/>
                 </StackPanel>
-                <TextBox Text="8080" />
+                <TextBox x:Name="txtPort" Text="8080" />
             </StackPanel>
-            
-            <Button HorizontalAlignment="Stretch" Height="45" Margin="0,10,0,0"
+
+            <Button x:Name="btnTest" Click="BtnTest_Click" HorizontalAlignment="Stretch" Height="45" Margin="0,10,0,0"
                     Background="#D97724" BorderThickness="0" CornerRadius="12">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE701;" FontSize="14" Foreground="#1A1A1A"/>
-                    <TextBlock Text="Kiểm tra kết nối" Foreground="#1A1A1A"/>
+                    <TextBlock x:Name="txtStatus" Text="Kiểm tra kết nối" Foreground="#1A1A1A"/>
                 </StackPanel>
             </Button>
         </StackPanel>

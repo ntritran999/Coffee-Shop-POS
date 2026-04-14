@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Windows.AppLifecycle;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,8 +43,16 @@ namespace Client.Views
             configServerDialog.CloseButtonText = "Hủy";
             configServerDialog.DefaultButton = ContentDialogButton.Primary;
 
+            // Đăng ký sự kiện khi user bấm nút Primary ("Lưu cấu hình")
+            configServerDialog.PrimaryButtonClick += (s, args) =>
+            {
+                var dialog = (ConfigServerDialog)s;
+                Client.Helpers.LocalSettingsHelper.SaveServerConfig(dialog.Host, dialog.Port);
+                AppInstance.Restart("");
+            };
 
-            var result = await configServerDialog.ShowAsync();
+            await configServerDialog.ShowAsync();
         }
+
     }
 }

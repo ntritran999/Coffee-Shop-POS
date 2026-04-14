@@ -1,3 +1,4 @@
+﻿using Client.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -23,9 +24,39 @@ namespace Client.Views
     /// </summary>
     public sealed partial class ConfigServerDialog : ContentDialog
     {
+        public string Host => txtHost.Text.Trim();
+        public string Port => txtPort.Text.Trim();
+
         public ConfigServerDialog()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+            this.Loaded += ConfigServerDialog_Loaded;
+        }
+
+        private void ConfigServerDialog_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Load cài đặt cũ lên giao diện
+            txtHost.Text = LocalSettingsHelper.GetServerHost();
+            txtPort.Text = LocalSettingsHelper.GetServerPort();
+        }
+
+        private async void BtnTest_Click(object sender, RoutedEventArgs e)
+        {
+            // Gọi thẳng tên biến đã khai báo bên XAML
+            btnTest.IsEnabled = false;
+
+            txtStatus.Text = "Đang kiểm tra kết nối...";
+            txtStatus.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Gray);
+
+            var result = await Client.Helpers.LocalSettingsHelper.TestConnectionAsync(Host, Port);
+
+            txtStatus.Text = result.message;
+            txtStatus.Foreground = result.isSuccess ?
+                new SolidColorBrush(Microsoft.UI.Colors.Green) :
+                new SolidColorBrush(Microsoft.UI.Colors.Red);
+
+            // Bật lại nút
+            btnTest.IsEnabled = true;
         }
     }
 }
