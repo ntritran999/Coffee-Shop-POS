@@ -1,6 +1,8 @@
-﻿using Client.Repositories;
+﻿using Client.Helpers;
+using Client.Repositories;
 using Client.Services;
 using Client.ViewModels;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,7 +23,6 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Microsoft.Extensions.Configuration;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -43,16 +44,20 @@ namespace Client
         public App()
         {
             var services = new ServiceCollection();
-
-
             services.AddSingleton<HttpClient>(sp =>
             {
                 var client = new HttpClient();
-                // url and port must match the server's configuration
-                client.BaseAddress = new Uri("http://localhost:5000/graphql");
+
+                // 1. Lấy cấu hình đã lưu từ lần chạy trước (hoặc mặc định)
+                string host = LocalSettingsHelper.GetServerHost();
+                string port = LocalSettingsHelper.GetServerPort();
+                string baseUri = LocalSettingsHelper.GetGraphQLEndpoint(host, port);
+
+                // 2. Thiết lập BaseAddress một lần duy nhất tại đây
+                client.BaseAddress = new Uri(baseUri);
+
                 return client;
             });
-
 
             services.AddSingleton<IImageUploadClient, ImageUploadClient>();
             services.AddSingleton<ICategoryRepository, ApiCategoryRepository>();
