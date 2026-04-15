@@ -89,5 +89,48 @@ namespace Client.ViewModels
                 IsBusy = false;
             }
         }
+
+        public async Task GenerateFoodDescriptionAsync(string foodName)
+        {
+            if (string.IsNullOrWhiteSpace(foodName) || IsBusy) return;
+
+            // 1. Hiển thị tin nhắn yêu cầu của người dùng lên UI
+            Messages.Add(new ChatMessage
+            {
+                Text = $"Hãy viết mô tả hấp dẫn cho món: {foodName}",
+                IsUser = true,
+                Time = DateTime.Now.ToString("HH:mm")
+            });
+
+            IsBusy = true;
+            try
+            {
+                // 2. Tạo prompt chuyên biệt hướng dẫn Gemini
+                string prompt = $"Bạn là một chuyên gia marketing ẩm thực cho quán cà phê. Hãy viết một đoạn mô tả thật hấp dẫn, ngắn gọn (khoảng 3-4 câu) để quảng cáo cho món '{foodName}'. Giọng văn lôi cuốn, kích thích vị giác của khách hàng.";
+
+                // 3. Gọi AI
+                var response = await _geminiService.AskAsync(prompt);
+
+                Messages.Add(new ChatMessage
+                {
+                    Text = response,
+                    IsUser = false,
+                    Time = DateTime.Now.ToString("HH:mm")
+                });
+            }
+            catch (Exception ex)
+            {
+                Messages.Add(new ChatMessage
+                {
+                    Text = "Lỗi: " + ex.Message,
+                    IsUser = false,
+                    Time = DateTime.Now.ToString("HH:mm")
+                });
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
     }
 }

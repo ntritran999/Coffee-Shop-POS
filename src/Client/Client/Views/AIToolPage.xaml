@@ -67,7 +67,7 @@
                         </DataTemplate>
                     </Button.ContentTemplate>
                 </Button>
-                <Button Content="Viết mô tả món" Background="Transparent" BorderThickness="0" Foreground="Gray">
+                <Button Content="Viết mô tả món" Background="Transparent" BorderThickness="0" Foreground="Gray" Click="BtnWriteDescription_Click">
                     <Button.ContentTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
