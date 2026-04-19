@@ -4,7 +4,6 @@ const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
 
 export async function hashPassword(password: string) {
     try {
-        console.log(password);
         return await bcrypt.hash(password, saltRounds);
     } catch (error) {
         console.log(error);
