@@ -2,6 +2,7 @@ import "dotenv/config";
 import prisma from "../db/prisma";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
+import * as HassUtil from "../utils/hash.util";
 import * as AccountValidator from "../validators/account.validator";
 
 const secretKey = process.env.SECRET_KEY || "";
@@ -14,7 +15,7 @@ export async function login(Username: string, Password: string) {
   });
 
   if (!account) throw new GraphQLError("Username does not exist");
-  if (Password !== account.Password) throw new GraphQLError("Password is incorrect");
+  if (await HassUtil.comparePassword(Password, account.Password) == false) throw new GraphQLError("Password is incorrect");
 
   const token = jwt.sign(
     {
