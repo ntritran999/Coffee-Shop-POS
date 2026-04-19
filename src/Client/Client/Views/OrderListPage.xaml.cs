@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +16,8 @@ using Client.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Client.Models;
 using System.Threading.Tasks;
+using Windows.UI;
+using Microsoft.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -34,6 +36,34 @@ public sealed partial class OrderListPage : Page
         FromDate.DateFormat = "{day.integer(2)}/{month.integer(2)}/{year.full}";
         ToDate.DateFormat = "{day.integer(2)}/{month.integer(2)}/{year.full}";
         ViewModel = App.Services!.GetRequiredService<OrderViewModel>();
+        this.Loaded += OrderListPage_Loaded;
+    }
+
+    private void OrderListPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (FilterButtonsPanel.Children.Count > 0 && FilterButtonsPanel.Children[0] is Button firstBtn)
+        {
+            firstBtn.Background = new SolidColorBrush(Color.FromArgb(255, 0xD9, 0x77, 0x24));
+            firstBtn.Foreground = new SolidColorBrush(Colors.White);
+        }
+    }
+
+    private void FilterButton_Click(object sender, RoutedEventArgs e)
+    {
+        var clickedBtn = sender as Button;
+        if (clickedBtn == null) return;
+
+        foreach (var child in FilterButtonsPanel.Children)
+        {
+            if (child is Button btn)
+            {
+                btn.ClearValue(Button.BackgroundProperty);
+                btn.ClearValue(Button.ForegroundProperty);
+            }
+        }
+
+        clickedBtn.Background = new SolidColorBrush(Color.FromArgb(255, 0xD9, 0x77, 0x24));
+        clickedBtn.Foreground = new SolidColorBrush(Colors.White);
     }
 
     private void Detail_Click(object sender, RoutedEventArgs e)

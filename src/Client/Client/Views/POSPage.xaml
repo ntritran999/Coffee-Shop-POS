@@ -38,9 +38,36 @@
                         <ItemsStackPanel Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Margin" Value="0, 0, 8, 0"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="CornerRadius" Value="28"/>
+                        <Setter Property="Background" Value="#EAEAEA"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ListViewItemPresenter
+                                        ContentTransitions="{TemplateBinding ContentTransitions}"
+                                        ContentMargin="{TemplateBinding Padding}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        CornerRadius="{TemplateBinding CornerRadius}"
+                                        SelectionCheckMarkVisualEnabled="False"
+                                        PointerOverBackground="#D5D5D5"
+                                        SelectedBackground="#D97724"
+                                        SelectedPointerOverBackground="#C76B1F"
+                                        SelectedPressedBackground="#AB5D1A"
+                                        SelectedForeground="White" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding CategoryName}" TextAlignment="Center"/>
+                        <TextBlock Text="{Binding CategoryName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
@@ -53,15 +80,15 @@
                     </GridView.ItemContainerStyle>
                     <GridView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Height="200" Width="100" Background="White">
+                            <Grid Height="200" Width="100" Background="{ThemeResource CardBackgroundFillColorDefault}" RowSpacing="16">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Image Grid.Row="0" Source="{Binding Image}" Stretch="UniformToFill" Margin="0, 0, 0, 5"/>
-                                <StackPanel Orientation="Vertical" Grid.Row="1" Padding="10,5,10,5">
-                                    <TextBlock Text="{Binding Name}" Margin="0, 0, 0, 5"/>
-                                    <TextBlock Text="{Binding Price, Converter={StaticResource FormattedPrice}}"/>
+                                <Image Grid.Row="0" Source="{Binding Image}" Stretch="UniformToFill"/>
+                                <StackPanel Orientation="Vertical" Grid.Row="1" Padding="10,5,10,5" Spacing="8">
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding Price, Converter={StaticResource FormattedPrice}}" Foreground="#D97724" FontWeight="Bold"/>
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
@@ -70,7 +97,8 @@
             </ScrollViewer>
             <ProgressRing IsActive="{x:Bind ViewModel.LoadCommand.IsRunning, Mode=OneWay}"/>
         </Grid>
-        <Border Background="White" Grid.Column="1" CornerRadius="8">
+        <Border Background="{ThemeResource CardBackgroundFillColorDefault}" Grid.Column="1" CornerRadius="8"
+                BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
             <Grid Padding="16" RowSpacing="16">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -83,7 +111,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <FontIcon Glyph="&#xE7BF;" Margin="0,0,8,0"/>
+                        <FontIcon Glyph="&#xE7BF;" Margin="0,0,8,0" Foreground="#D97724"/>
                         <TextBlock Text="Đơn hàng hiện tại" FontWeight="Bold"/>
                     </StackPanel>
                 </Grid>
@@ -102,18 +130,15 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16">
-                                                <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4" Padding="4"
-                        VerticalAlignment="Top">
-                                                    <TextBlock FontWeight="Bold">
-                                                        <Run Text="{Binding Count, Mode=OneWay}"/>
-                                                        <Run Text="x"/>
+                                                    <Border BorderBrush="Black" BorderThickness="1" CornerRadius="8" Padding="8" VerticalAlignment="Top" Background="#f5f4f1">
+                                                    <TextBlock FontWeight="Bold" Foreground="#D97724">
+                                                        <Run Text="{Binding Count, Mode=OneWay}"/><Run Text="x"/>
                                                     </TextBlock>
                                                 </Border>
                                                 <StackPanel Orientation="Vertical" Spacing="8">
-                                                    <TextBlock Text="{Binding Detail.Name}" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Detail.Name}" Style="{StaticResource BodyLargeStrongTextBlockStyle}"/>
                                                     <TextBlock>
-                                                        <Run Text="{Binding Detail.Price, Converter={StaticResource FormattedPrice}}" />
-                                                        <Run Text="/món"/>
+                                                        <Run Text="{Binding Detail.Price, Converter={StaticResource FormattedPrice}}" /><Run Text="/món"/>
                                                     </TextBlock>
                                                 </StackPanel>
                                             </StackPanel>
@@ -121,8 +146,8 @@
                                                 <Button Command="{Binding RemoveItemCommand}" HorizontalAlignment="Right">
                                                     <FontIcon Glyph="&#xE711;" FontSize="10" FontWeight="Light"/>
                                                 </Button>
-                                                <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding TotalPrice, Converter={StaticResource FormattedPrice}, Mode=OneWay}" FontWeight="Bold"/>
-                                                    <TextBox Text="{x:Bind Notes, Mode=TwoWay}" PlaceholderText="Ghi chú" FontWeight="Light" FontSize="12" Width="200"/>
+                                                <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding TotalPrice, Converter={StaticResource FormattedPrice}, Mode=OneWay}" FontWeight="Bold" Foreground="#D97724"/>
+                                                <TextBox Text="{x:Bind Notes, Mode=TwoWay}" PlaceholderText="Ghi chú" FontWeight="Light" FontSize="12" Width="200"/>
                                              </StackPanel>
                                         </Grid>
                                     </Border>
@@ -162,28 +187,28 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Tổng cộng"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.TotalBillPrice, Converter={StaticResource FormattedPrice}, Mode=OneWay}"/>
+                            <TextBlock Grid.Column="0" Text="Tổng cộng" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.TotalBillPrice, Converter={StaticResource FormattedPrice}, Mode=OneWay}" Foreground="#D97724" FontWeight="Bold" FontSize="20"/>
                         </Grid>
                     <Grid Grid.Row="2" ColumnSpacing="16">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                        <Button IsEnabled="{x:Bind ViewModel.HasSelection, Mode=OneWay}" Command="{x:Bind ViewModel.SaveBillCommand}" CornerRadius="8" Grid.Column="0" HorizontalAlignment="Stretch">
-                                <StackPanel Orientation="Vertical">
+                        <Button IsEnabled="{x:Bind ViewModel.HasSelection, Mode=OneWay}" Command="{x:Bind ViewModel.SaveBillCommand}" CornerRadius="8" Grid.Column="0" HorizontalAlignment="Stretch" Foreground="#D97724" BorderBrush="#D97724" BorderThickness="1" Background="Transparent">
+                                <StackPanel Orientation="Vertical" Padding="8" Spacing="4">
                                     <FontIcon Glyph="&#xE74E;" />
                                     <TextBlock Text="Lưu đơn"/>
                                 </StackPanel>
                             </Button>
-                            <Button Command="{x:Bind ViewModel.ClearOrderCommand}" CornerRadius="8" Grid.Column="1" HorizontalAlignment="Stretch">
-                                <StackPanel Orientation="Vertical">
+                            <Button Command="{x:Bind ViewModel.ClearOrderCommand}" CornerRadius="8" Grid.Column="1" HorizontalAlignment="Stretch" Foreground="#E53935" Background="#FFEBEE" BorderThickness="0">
+                                <StackPanel Orientation="Vertical" Padding="8" Spacing="4">
                                     <FontIcon Glyph="&#xEA39;" />
                                     <TextBlock Text="Xoá đơn"/>
                                 </StackPanel>
                             </Button>
                         </Grid>
-                    <Button IsEnabled="{x:Bind ViewModel.HasSelection, Mode=OneWay}" Command="{x:Bind ViewModel.SavePaidBillCommand}" CornerRadius="8" Grid.Row="3" HorizontalAlignment="Stretch">
+                    <Button IsEnabled="{x:Bind ViewModel.HasSelection, Mode=OneWay}" Command="{x:Bind ViewModel.SavePaidBillCommand}" CornerRadius="8" Grid.Row="3" HorizontalAlignment="Stretch" Background="#D97724" Foreground="White">
                             <StackPanel Orientation="Vertical">
                                 <FontIcon Glyph="&#xE930;" />
                                 <TextBlock Text="Thanh toán"/>

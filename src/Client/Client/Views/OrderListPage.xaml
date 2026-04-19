@@ -27,8 +27,8 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="10" Padding="16">
-                        <TextBlock Text="{x:Bind ViewModel.SelectedOrderDetail.BillID, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}"/>
+                    <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="10" Padding="16" Background="#fbf6f0">
+                        <TextBlock Text="{x:Bind ViewModel.SelectedOrderDetail.BillID, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" Foreground="#D97724"/>
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon Glyph="&#xE823;" FontSize="12"/>
                             <TextBlock Text="{x:Bind ViewModel.SelectedOrderDetail.DateCheckIn, Mode=OneWay}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
@@ -70,7 +70,7 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
-                                    <FontIcon Glyph="&#xEC32;" />
+                                    <FontIcon Glyph="&#xEC32;" Foreground="#D97724"/>
                                     <TextBlock Text="Danh sách món ăn" FontWeight="Bold"/>
                                 </StackPanel>
                                 <Border Grid.Row="1" CornerRadius="8" Padding="16" BorderBrush="Black" BorderThickness="1">
@@ -84,23 +84,21 @@
                                                             <ColumnDefinition Width="Auto"/>
                                                         </Grid.ColumnDefinitions>
                                                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16">
-                                                            <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4" Padding="4"
-                                                                VerticalAlignment="Top">
-                                                                <TextBlock FontWeight="Bold">
-                                                                    <Run Text="{Binding Count}"/>
-                                                                    <Run Text="x"/>
+                                                            <Border BorderBrush="Black" BorderThickness="1" CornerRadius="8" Padding="8"
+                                                                VerticalAlignment="Top" Background="#f5f4f1">
+                                                                <TextBlock FontWeight="Bold" Foreground="#D97724">
+                                                                    <Run Text="{Binding Count}"/><Run Text="x"/>
                                                                 </TextBlock>
                                                             </Border>
                                                             <StackPanel Orientation="Vertical" Spacing="8">
-                                                                <TextBlock Text="{Binding Detail.Name}" FontWeight="Bold"/>
+                                                                <TextBlock Text="{Binding Detail.Name}" Style="{StaticResource BodyLargeStrongTextBlockStyle}"/>
                                                                 <TextBlock>
-                                                                    <Run Text="{Binding Detail.Price, Converter={StaticResource FormattedPrice}}"/>
-                                                                    <Run Text="/món"/>
+                                                                    <Run Text="{Binding Detail.Price, Converter={StaticResource FormattedPrice}}"/><Run Text="/món"/>
                                                                 </TextBlock>
                                                             </StackPanel>
                                                         </StackPanel>
                                                         <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="8">
-                                                            <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding TotalPrice, Converter={StaticResource FormattedPrice}}" FontWeight="Bold"/>
+                                                            <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding TotalPrice, Converter={StaticResource FormattedPrice}}" FontWeight="Bold" Foreground="#D97724"/>
                                                             <TextBlock Text="{Binding Notes}" FontStyle="Italic" FontWeight="Light" FontSize="12" Width="200"/>
                                                         </StackPanel>
                                                     </Grid>
@@ -117,8 +115,8 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Tạm tính"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.SelectedOrderDetail.TotalPrice, Mode=OneWay}"/>
+                                    <TextBlock Grid.Column="0" Text="Tạm tính: "/>
+                                    <TextBlock Grid.Column="1" Foreground="#D97724" Text="{x:Bind ViewModel.SelectedOrderDetail.TotalPrice, Mode=OneWay, Converter={StaticResource FormattedPrice}}" FontWeight="Bold"/>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -129,13 +127,15 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button IsEnabled="{x:Bind ViewModel.SelectedOrderLine.StatusRaw, Converter={StaticResource IsBillUpdateAllowed}, Mode=OneWay}" Click="DeleteOrder_ClickAsync" Grid.Column="0" HorizontalAlignment="Stretch">
+                            <Button IsEnabled="{x:Bind ViewModel.SelectedOrderLine.StatusRaw, Converter={StaticResource IsBillUpdateAllowed}, Mode=OneWay}" Click="DeleteOrder_ClickAsync" Grid.Column="0" HorizontalAlignment="Stretch"
+                                    Foreground="#E53935" Background="#FFEBEE">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE74D;" />
                                     <TextBlock Text="Huỷ đơn"/>
                                 </StackPanel>
                             </Button>
-                            <Button IsEnabled="{x:Bind ViewModel.SelectedOrderLine.StatusRaw, Converter={StaticResource IsBillUpdateAllowed}, Mode=OneWay}" Command="{x:Bind ViewModel.PayOrderCommand}" Grid.Column="1" HorizontalAlignment="Stretch">
+                            <Button IsEnabled="{x:Bind ViewModel.SelectedOrderLine.StatusRaw, Converter={StaticResource IsBillUpdateAllowed}, Mode=OneWay}" Command="{x:Bind ViewModel.PayOrderCommand}" Grid.Column="1" HorizontalAlignment="Stretch"
+                                     Background="#D97724" Foreground="White">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE8C7;" />
                                     <TextBlock Text="Thanh toán"/>
@@ -145,13 +145,14 @@
                     </Border>
                 </Grid>
             </SplitView.Pane>
-            <Grid RowSpacing="20" Background="#fbfaf8">
+            <Grid RowSpacing="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Border Padding="20" Grid.Row="0" CornerRadius="8" Background="White">
+                <Border Padding="20" Grid.Row="0" CornerRadius="8" Background="White"
+                        BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -189,17 +190,23 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                            <StackPanel Name="FilterButtonsPanel" Grid.Column="0" Orientation="Horizontal" Spacing="4">
                                 <Button Content="Tất cả"
-                                    Command="{x:Bind ViewModel.FilterAllCommand}"/>
+                                    Command="{x:Bind ViewModel.FilterAllCommand}" Click="FilterButton_Click"/>
                                 <Button Content="Mới tạo"
-                                    Command="{x:Bind ViewModel.FilterNewCommand}"/>
+                                    Command="{x:Bind ViewModel.FilterNewCommand}" Click="FilterButton_Click"/>
                                 <Button Content="Đã thanh toán"
-                                    Command="{x:Bind ViewModel.FilterPaidCommand}"/>
+                                    Command="{x:Bind ViewModel.FilterPaidCommand}" Click="FilterButton_Click"/>
                                 <Button Content="Đã hủy"
-                                    Command="{x:Bind ViewModel.FilterCancelledCommand}"/>
+                                    Command="{x:Bind ViewModel.FilterCancelledCommand}" Click="FilterButton_Click"/>
                             </StackPanel>
-                            <DropDownButton Content="Bộ lọc nâng cao" Grid.Column="1">
+                            <DropDownButton Grid.Column="1">
+                                <DropDownButton.Content>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE71C;" FontSize="12"/>
+                                        <TextBlock Text="Bộ lọc nâng cao"/>
+                                    </StackPanel>
+                                </DropDownButton.Content>
                                 <DropDownButton.Flyout>
                                     <Flyout Placement="BottomEdgeAlignedRight">
                                         <StackPanel Width="300" Spacing="12" Padding="10">
@@ -223,7 +230,7 @@
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
                                                 <Button Command="{x:Bind ViewModel.ClearAdvancedFilterCommand}" Grid.Column="1" Content="Thiết lập lại" HorizontalAlignment="Stretch"/>
-                                                <Button Command="{x:Bind ViewModel.FilterTotalPriceRangeCommand}" Grid.Column="0" Content="Áp dụng" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Stretch"/>
+                                                <Button Command="{x:Bind ViewModel.FilterTotalPriceRangeCommand}" Grid.Column="0" Content="Áp dụng" HorizontalAlignment="Stretch" Background="#D97724" Foreground="White"/>
                                             </Grid>
                                         </StackPanel>
                                     </Flyout>
@@ -233,8 +240,8 @@
                     </Grid>
                 </Border>
                 <Border Grid.Row="1"
-        Background="White"
-        CornerRadius="8">
+        Background="{ThemeResource CardBackgroundFillColorDefault}"
+        CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -246,7 +253,7 @@
                           ItemsSource="{x:Bind ViewModel.Orders, Mode=OneWay}">
 
                             <ListView.Header>
-                                <Border BorderThickness="0,0,0,1" Padding="20,12">
+                                <Border BorderThickness="0,0,0,1" Padding="20,12" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="2*"/>
@@ -258,26 +265,26 @@
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Grid.Column="0" Text="Mã đơn"
-                       FontWeight="SemiBold" FontSize="13"/>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Tapped="DateTime_Tapped">
+                       FontWeight="SemiBold" FontSize="13" Foreground="#D97724"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" Tapped="DateTime_Tapped">
                                             <TextBlock Text="Thời gian"
-                                           FontWeight="SemiBold" FontSize="13"/>
-                                            <FontIcon Glyph="&#xE8CB;" FontSize="12" FontWeight="Light"/>
+                                           FontWeight="SemiBold" FontSize="13" Foreground="#D97724"/>
+                                            <FontIcon Glyph="&#xE8CB;" FontSize="12" FontWeight="Light" Foreground="#D97724"/>
                                         </StackPanel>
                                         <TextBlock Grid.Column="2" Text="Bàn / Vị trí"
                        FontWeight="SemiBold" FontSize="13"
-                       HorizontalAlignment="Center"/>
-                                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Tapped="TotalPrice_Tapped">
-                                            <TextBlock Text="Tổng tiền (đ)"
-                                           FontWeight="SemiBold" FontSize="13"/>
-                                            <FontIcon Glyph="&#xE8CB;" FontSize="12" FontWeight="Light"/>
+                       HorizontalAlignment="Center" Foreground="#D97724"/>
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" Tapped="TotalPrice_Tapped">
+                                            <TextBlock Text="Tổng tiền"
+                                           FontWeight="SemiBold" FontSize="13" Foreground="#D97724"/>
+                                            <FontIcon Glyph="&#xE8CB;" FontSize="12" FontWeight="Light" Foreground="#D97724"/>
                                         </StackPanel>
                                         <TextBlock Grid.Column="4" Text="Trạng thái"
                        FontWeight="SemiBold" FontSize="13"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center" Foreground="#D97724"/>
                                         <TextBlock Grid.Column="5" Text="Thao tác"
                        FontWeight="SemiBold" FontSize="13"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center" Foreground="#D97724"/>
                                     </Grid>
                                 </Border>
                             </ListView.Header>
@@ -315,7 +322,7 @@
 
                                             <TextBlock Grid.Column="0" Text="{Binding BillID}"
                                    FontWeight="SemiBold"
-                                   FontSize="13" VerticalAlignment="Center"/>
+                                   FontSize="13" VerticalAlignment="Center" Foreground="#D97724"/>
                                             <TextBlock Grid.Column="1" Text="{Binding DateCheckIn, Converter={StaticResource DateTimeString}}"
                                    FontSize="13"
                                    VerticalAlignment="Center"/>
@@ -323,7 +330,7 @@
                                    FontSize="13"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="3" Text="{Binding TotalPrice}"
+                                            <TextBlock Grid.Column="3" Text="{Binding TotalPrice, Converter={StaticResource FormattedPrice}}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    HorizontalAlignment="Right"
@@ -401,7 +408,7 @@
                     <Border Grid.Column="0"
             Background="#FFF3E8"
             CornerRadius="12"
-            Padding="18,14">
+            Padding="18,14" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -430,7 +437,7 @@
                     <Border Grid.Column="1"
             Background="#F5F5F5"
             CornerRadius="12"
-            Padding="18,14">
+            Padding="18,14" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -459,7 +466,7 @@
                     <Border Grid.Column="2"
             Background="#F1FBF4"
             CornerRadius="12"
-            Padding="18,14">
+            Padding="18,14" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
