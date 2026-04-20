@@ -4,6 +4,8 @@ using System.Text;
 
 namespace Client.Models
 {
+    
+
     public class ReportSummary
     {
         public string TotalRevenue { get; set; } = string.Empty;
@@ -18,6 +20,7 @@ namespace Client.Models
         // Dữ liệu thô cho biểu đồ
         public List<ChartDataPoint> ChartData { get; set; } = new();
         public List<CategoryDataPoint> CategoryData { get; set; } = new();
+        public List<ProductTrendItem> ProductTrends { get; set; } = new();
     }
 
     public class ChartDataPoint
@@ -32,5 +35,13 @@ namespace Client.Models
         public string Name { get; set; } = string.Empty;
         public int Percentage { get; set; }
         public string ColorHex { get; set; } = string.Empty;
+    }
+
+    public class ProductTrendItem
+    {
+        public int CategoryID { get; set; } // 👉 THÊM DÒNG NÀY
+        public string ProductName { get; set; } = string.Empty;
+        public string ColorHex { get; set; } = string.Empty;
+        public List<int> Quantities { get; set; } = new();
     }
 }
