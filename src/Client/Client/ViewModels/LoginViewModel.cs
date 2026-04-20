@@ -23,7 +23,21 @@ namespace Client.ViewModels
             _authService = authService;
             _prefsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "login_prefs.txt");
             LoadSavedCredentials();
+            _ = AutoLoginIfSavedAsync();
         }
+
+        private async Task AutoLoginIfSavedAsync()
+        {
+            if (IsRememberMe && !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password))
+            {
+                // Tạo độ trễ (delay) khoảng 800 mili-giây. 
+                await Task.Delay(800);
+
+                // Gọi command đăng nhập
+                await LoginAsync();
+            }
+        }
+
         private void LoadSavedCredentials()
         {
             try
