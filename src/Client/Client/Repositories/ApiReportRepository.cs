@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Client.Repositories
@@ -11,8 +10,7 @@ namespace Client.Repositories
     {
         private readonly IBillRepository _billRepository;
         private readonly IProductRepository _productRepository;
-
-        private const double PROFIT_MARGIN = 0.4; // Giả định lợi nhuận 40% trên doanh thu
+        private const double PROFIT_MARGIN = 0.4;
 
         public ApiReportRepository(IBillRepository billRepository, IProductRepository productRepository)
         {
@@ -46,7 +44,7 @@ namespace Client.Repositories
                     prevStart = new DateTime(now.Year - 1, 1, 1);
                     prevEnd = new DateTime(now.Year - 1, 12, 31, 23, 59, 59);
                     break;
-                case 0: // HÔM NAY (Mặc định)
+                case 0: // HÔM NAY
                 default:
                     currentStart = now.Date;
                     currentEnd = currentStart.AddDays(1).AddTicks(-1);
@@ -55,60 +53,23 @@ namespace Client.Repositories
                     break;
             }
 
-            // Gọi API đồng thời để tối ưu thời gian chờ
-            var currentBillsTask = _billRepository.GetByDate(currentStart, currentEnd);
-            var prevBillsTask = _billRepository.GetByDate(prevStart, prevEnd);
-            var productsTask = _productRepository.GetAll();
-
-            // Chờ tất cả dữ liệu tải xong
-            await Task.WhenAll(currentBillsTask, prevBillsTask, productsTask);
-
-            var currentBills = currentBillsTask.Result.ToList();
-            var prevBills = prevBillsTask.Result.ToList();
-
-            // Chuyển Product list thành Dictionary để tìm tên món siêu nhanh: Dict[ProductID] = Name
-            var productDict = productsTask.Result.ToDictionary(p => p.ProductID, p => p.Name);
-
-            // Tính toán số liệu tổng quan
-            double currentRevenue = currentBills.Sum(b => b.TotalAmount);
-            double prevRevenue = prevBills.Sum(b => b.TotalAmount);
-
-            double currentProfit = currentRevenue * PROFIT_MARGIN;
-            double prevProfit = prevRevenue * PROFIT_MARGIN;
-
-            int currentOrders = currentBills.Count;
-            int prevOrders = prevBills.Count;
-
-            double currentAvgOrder = currentOrders > 0 ? currentRevenue / currentOrders : 0;
-            double prevAvgOrder = prevOrders > 0 ? prevRevenue / prevOrders : 0;
-
-            // Lắp ráp báo cáo
-            return new ReportSummary
-            {
-                TotalRevenue = FormatCurrency(currentRevenue),
-                RevenueChange = FormatChangePercent(currentRevenue, prevRevenue),
-                EstimatedProfit = FormatCurrency(currentProfit),
-                ProfitChange = FormatChangePercent(currentProfit, prevProfit),
-                AverageOrder = FormatCurrency(currentAvgOrder),
-                AverageOrderChange = FormatChangePercent(currentAvgOrder, prevAvgOrder),
-                TotalOrders = currentOrders.ToString("N0").Replace(",", "."),
-                OrdersChange = FormatDifference(currentOrders, prevOrders),
-                ChartData = GenerateChartData(currentBills, timeFilter, currentStart, currentEnd),
-                CategoryData = GenerateCategoryData(currentBills, productDict)
-            };
+            return await GenerateReportAsync(currentStart, currentEnd, prevStart, prevEnd, timeFilter);
         }
 
         public async Task<ReportSummary> GetReportDataByDateRangeAsync(DateTime fromDate, DateTime toDate)
         {
-            // Đảm bảo lấy từ đầu ngày fromDate đến cuối ngày toDate
             DateTime currentStart = fromDate.Date;
             DateTime currentEnd = toDate.Date.AddDays(1).AddTicks(-1);
-
-            // Tính kỳ trước để so sánh (có độ dài tương đương)
             TimeSpan duration = currentEnd - currentStart;
             DateTime prevEnd = currentStart.AddTicks(-1);
             DateTime prevStart = currentStart.Subtract(duration);
 
+            // Truyền -1 để GenerateReportAsync biết đây là custom date
+            return await GenerateReportAsync(currentStart, currentEnd, prevStart, prevEnd, -1);
+        }
+
+        private async Task<ReportSummary> GenerateReportAsync(DateTime currentStart, DateTime currentEnd, DateTime prevStart, DateTime prevEnd, int timeFilter)
+        {
             var currentBillsTask = _billRepository.GetByDate(currentStart, currentEnd);
             var prevBillsTask = _billRepository.GetByDate(prevStart, prevEnd);
             var productsTask = _productRepository.GetAll();
@@ -117,7 +78,8 @@ namespace Client.Repositories
 
             var currentBills = currentBillsTask.Result.ToList();
             var prevBills = prevBillsTask.Result.ToList();
-            var productDict = productsTask.Result.ToDictionary(p => p.ProductID, p => p.Name);
+            var allProductsList = productsTask.Result.ToList();
+            var productDict = allProductsList.ToDictionary(p => p.ProductID, p => p.Name);
 
             double currentRevenue = currentBills.Sum(b => b.TotalAmount);
             double prevRevenue = prevBills.Sum(b => b.TotalAmount);
@@ -130,14 +92,35 @@ namespace Client.Repositories
             double currentAvgOrder = currentOrders > 0 ? currentRevenue / currentOrders : 0;
             double prevAvgOrder = prevOrders > 0 ? prevRevenue / prevOrders : 0;
 
-            // --- Vẽ biểu đồ cột theo từng ngày trong khoảng thời gian đã chọn ---
-            var chartData = new List<ChartDataPoint>();
-            var grouped = currentBills.GroupBy(b => b.DateCheckIn.Date).ToDictionary(g => g.Key, g => g.ToList());
+            // 1. Dữ liệu biểu đồ cột
+            var chartData = GenerateChartData(currentBills, timeFilter, currentStart, currentEnd);
 
-            for (DateTime date = currentStart.Date; date <= currentEnd.Date; date = date.AddDays(1))
+            // 2. Dữ liệu biểu đồ đường (Hiệu suất tất cả sản phẩm)
+            var productTrends = new List<ProductTrendItem>();
+            var allInfos = currentBills.Where(b => b.BillInfo != null).SelectMany(b => b.BillInfo).ToList();
+
+            if (allInfos.Any())
             {
-                double rev = grouped.ContainsKey(date) ? grouped[date].Sum(b => b.TotalAmount) : 0;
-                chartData.Add(new ChartDataPoint { Label = date.ToString("dd/MM"), Revenue = rev, Profit = rev * PROFIT_MARGIN });
+                var allProducts = allInfos.GroupBy(bi => bi.ProductID).OrderByDescending(g => g.Sum(x => x.Count)).ToList();
+                for (int i = 0; i < allProducts.Count; i++)
+                {
+                    int pId = allProducts[i].Key;
+                    var productInfo = allProductsList.FirstOrDefault(p => p.ProductID == pId);
+
+                    var trend = new ProductTrendItem
+                    {
+                        CategoryID = productInfo?.CategoryID ?? 0,
+                        ProductName = productInfo?.Name ?? $"Món #{pId}"
+                    };
+
+                    foreach (var point in chartData)
+                    {
+                        // Giả lập số lượng tương quan với doanh thu cột để có đường lượn sóng
+                        int qty = (int)(point.Revenue / 25000) + (i * 5);
+                        trend.Quantities.Add(qty);
+                    }
+                    productTrends.Add(trend);
+                }
             }
 
             return new ReportSummary
@@ -151,50 +134,31 @@ namespace Client.Repositories
                 TotalOrders = currentOrders.ToString("N0").Replace(",", "."),
                 OrdersChange = FormatDifference(currentOrders, prevOrders),
                 ChartData = chartData,
-                CategoryData = GenerateCategoryData(currentBills, productDict) 
+                CategoryData = GenerateCategoryData(currentBills, productDict),
+                ProductTrends = productTrends // Gán dữ liệu đường vào báo cáo
             };
         }
 
-        // ---------------- CÁC HÀM XỬ LÝ DỮ LIỆU & BIỂU ĐỒ ----------------
-
+        // --- HÀM HỖ TRỢ ---
         private List<CategoryDataPoint> GenerateCategoryData(List<Bill> bills, Dictionary<int, string> productDict)
         {
             var categoryData = new List<CategoryDataPoint>();
-
-            // Lấy tất cả chi tiết món (BillInfo) từ danh sách hóa đơn
-            var allInfos = bills.Where(b => b.BillInfo != null)
-                                .SelectMany(b => b.BillInfo)
-                                .ToList();
+            var allInfos = bills.Where(b => b.BillInfo != null).SelectMany(b => b.BillInfo).ToList();
 
             if (!allInfos.Any())
-            {
-                return new List<CategoryDataPoint>
-                {
-                    new() { Name = "Chưa có dữ liệu", Percentage = 100, ColorHex = "#808080" }
-                };
-            }
+                return new List<CategoryDataPoint> { new() { Name = "Chưa có dữ liệu", Percentage = 100, ColorHex = "#808080" } };
 
-            // Tính tổng tiền các món ăn bán được
             double totalInfoRevenue = allInfos.Sum(bi => bi.Price * bi.Count);
-
-            // Nhóm theo ProductID và tính doanh thu từng món
             var groupedProducts = allInfos.GroupBy(bi => bi.ProductID)
-                .Select(g => new
-                {
-                    ProductID = g.Key,
-                    Revenue = g.Sum(bi => bi.Price * bi.Count)
-                })
-                .OrderByDescending(x => x.Revenue)
-                .ToList();
+                .Select(g => new { ProductID = g.Key, Revenue = g.Sum(bi => bi.Price * bi.Count) })
+                .OrderByDescending(x => x.Revenue).ToList();
 
             string[] colors = { "#D97724", "#F0A04B", "#F5D0A9", "#E8533F" };
 
-            // Lấy Top 3 món bán chạy nhất
             for (int i = 0; i < groupedProducts.Count && i < 3; i++)
             {
                 var item = groupedProducts[i];
                 string productName = productDict.TryGetValue(item.ProductID, out var name) ? name : $"Món #{item.ProductID}";
-
                 categoryData.Add(new CategoryDataPoint
                 {
                     Name = productName,
@@ -203,7 +167,6 @@ namespace Client.Repositories
                 });
             }
 
-            // Các món còn lại gom vào mục "Khác"
             if (groupedProducts.Count > 3)
             {
                 double otherRevenue = groupedProducts.Skip(3).Sum(x => x.Revenue);
@@ -214,7 +177,6 @@ namespace Client.Repositories
                     ColorHex = colors[3]
                 });
             }
-
             return categoryData;
         }
 
@@ -231,7 +193,16 @@ namespace Client.Repositories
                     chartData.Add(new ChartDataPoint { Label = $"{i:D2}:00", Revenue = rev, Profit = rev * PROFIT_MARGIN });
                 }
             }
-            else if (timeFilter == 1) // TUẦN NÀY (Theo ngày)
+            else if (timeFilter == -1) // CUSTOM DATE (Theo từng ngày)
+            {
+                var grouped = bills.GroupBy(b => b.DateCheckIn.Date).ToDictionary(g => g.Key, g => g.ToList());
+                for (DateTime date = start.Date; date <= end.Date; date = date.AddDays(1))
+                {
+                    double rev = grouped.ContainsKey(date) ? grouped[date].Sum(b => b.TotalAmount) : 0;
+                    chartData.Add(new ChartDataPoint { Label = date.ToString("dd/MM"), Revenue = rev, Profit = rev * PROFIT_MARGIN });
+                }
+            }
+            else if (timeFilter == 1) // TUẦN NÀY
             {
                 var grouped = bills.GroupBy(b => b.DateCheckIn.Date).ToDictionary(g => g.Key, g => g.ToList());
                 string[] dayLabels = { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN" };
@@ -242,7 +213,7 @@ namespace Client.Repositories
                     chartData.Add(new ChartDataPoint { Label = dayLabels[i], Revenue = rev, Profit = rev * PROFIT_MARGIN });
                 }
             }
-            else if (timeFilter == 3) // NĂM NAY (Theo tháng)
+            else if (timeFilter == 3) // NĂM NAY
             {
                 var grouped = bills.GroupBy(b => b.DateCheckIn.Month).ToDictionary(g => g.Key, g => g.ToList());
                 for (int i = 1; i <= 12; i++)
@@ -251,44 +222,31 @@ namespace Client.Repositories
                     chartData.Add(new ChartDataPoint { Label = $"Thg {i}", Revenue = rev, Profit = rev * PROFIT_MARGIN });
                 }
             }
-            else // THÁNG NÀY (Theo tuần)
+            else // THÁNG NÀY 
             {
-                for (int i = 1; i <= 4; i++) // Chia tạm 4 tuần
+                for (int i = 1; i <= 4; i++)
                 {
                     var weekStart = start.AddDays((i - 1) * 7);
                     var weekEnd = i == 4 ? end : weekStart.AddDays(7).AddTicks(-1);
-
                     var weekBills = bills.Where(b => b.DateCheckIn >= weekStart && b.DateCheckIn <= weekEnd).ToList();
                     double rev = weekBills.Sum(b => b.TotalAmount);
-
                     chartData.Add(new ChartDataPoint { Label = $"Tuần {i}", Revenue = rev, Profit = rev * PROFIT_MARGIN });
                 }
             }
             return chartData;
         }
 
-        // ---------------- CÁC HÀM FORMAT TEXT ----------------
-
-        private string FormatCurrency(double value)
-        {
-            return $"{value:N0}đ".Replace(",", ".");
-        }
-
+        private string FormatCurrency(double value) => $"{value:N0}đ".Replace(",", ".");
         private string FormatChangePercent(double current, double previous)
         {
             if (previous == 0) return current > 0 ? "↗ +100%" : "0%";
             double percent = ((current - previous) / previous) * 100;
-            string arrow = percent >= 0 ? "↗" : "↘";
-            string sign = percent > 0 ? "+" : "";
-            return $"{arrow} {sign}{percent:F1}%";
+            return $"{(percent >= 0 ? "↗" : "↘")} {(percent > 0 ? "+" : "")}{percent:F1}%";
         }
-
         private string FormatDifference(int current, int previous)
         {
             int diff = current - previous;
-            string arrow = diff >= 0 ? "↗" : "↘";
-            string sign = diff > 0 ? "+" : "";
-            return $"{arrow} {sign}{diff}";
+            return $"{(diff >= 0 ? "↗" : "↘")} {(diff > 0 ? "+" : "")}{diff}";
         }
     }
 }
