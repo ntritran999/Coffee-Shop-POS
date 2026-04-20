@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Client.Views
 {
@@ -33,15 +34,49 @@ namespace Client.Views
 
         private void navigation_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            if (args.InvokedItemContainer is NavigationViewItem item &&
-                item.Tag is string tag &&
-                _pageMap.TryGetValue(tag, out var entry))
+            var tag = args.InvokedItemContainer?.Tag?.ToString();
+            if (tag != null && _pageMap.TryGetValue(tag, out var entry))
             {
                 if (contentFrame.CurrentSourcePageType != entry.pageType)
                 {
                     contentFrame.Navigate(entry.pageType);
                 }
                 HeaderTitle.Text = entry.title;
+            }
+        }
+
+        private void NavLogoutItem_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            PerformLogout();
+        }
+
+        private void PerformLogout()
+        {
+            try
+            {
+                // xóa file cấu hình đăng nhập
+                string prefsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "login_prefs.txt");
+                if (File.Exists(prefsFilePath))
+                {
+                    File.Delete(prefsFilePath);
+                }
+
+                // xóa thông tin phiên làm việc
+                SessionManager.CurrentAccount = null;
+
+
+                if (MainWindow.AppFrame != null)
+                {
+                    MainWindow.AppFrame.Navigate(typeof(Client.Views.LoginPage));
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Lỗi: MainWindow.AppFrame bị null, không thể chuyển trang.");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi đăng xuất: {ex.Message}");
             }
         }
     }

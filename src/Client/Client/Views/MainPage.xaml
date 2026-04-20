@@ -152,7 +152,7 @@
         </NavigationView.PaneHeader>
 
         <NavigationView.PaneFooter>
-            <NavigationViewItem Tag="Logout">
+            <NavigationViewItem x:Name="NavLogoutItem" Tag="Logout" Tapped="NavLogoutItem_Tapped">
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <FontIcon Glyph="&#xE8AC;"/>
                     <TextBlock Text="Đăng xuất"/>
