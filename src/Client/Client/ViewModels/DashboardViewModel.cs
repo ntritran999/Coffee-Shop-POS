@@ -1,4 +1,4 @@
-﻿using Client.Models;
+using Client.Models;
 using Client.Repositories;
 using Client.Services;
 using Client.Views;
@@ -28,6 +28,13 @@ namespace Client.ViewModels
     public partial class DashboardViewModel : ObservableObject
     {
         private readonly BillService _billService;
+        private readonly ProductService _productService;
+
+        [ObservableProperty]
+        private int totalProducts = 0;
+
+        [ObservableProperty]
+        private List<Product> lowStockProducts = new();
 
         [ObservableProperty]
         private ISeries[] seriesCollection;
@@ -53,9 +60,10 @@ namespace Client.ViewModels
         [ObservableProperty]
         private int totalBills = 0;
 
-        public DashboardViewModel(BillService billService)
+        public DashboardViewModel(BillService billService, ProductService productService)
         {
             _billService = billService;
+            _productService = productService;
             _ = InitializeDashboard();
         }
 
@@ -152,6 +160,15 @@ namespace Client.ViewModels
         {
             try
             {
+                // Load products data
+                var allProducts = await _productService.GetAllProducts();
+                if (allProducts != null)
+                {
+                    var productsList = allProducts.ToList();
+                    TotalProducts = productsList.Count;
+                    LowStockProducts = productsList.Where(p => p.Unit < 5).OrderBy(p => p.Unit).Take(5).ToList();
+                }
+
                 // Load top 5 selling products
                 var topProducts = await _billService.GetTopSellingProductsAsync(top: 5);
                 TopSellingProducts = topProducts ?? new();
@@ -165,6 +182,8 @@ namespace Client.ViewModels
                 // Log error if needed
                 TopSellingProducts = new();
                 RecentOrders = new();
+                LowStockProducts = new();
+                TotalProducts = 0;
             }
         }
 

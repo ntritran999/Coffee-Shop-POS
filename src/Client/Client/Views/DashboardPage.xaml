@@ -13,6 +13,7 @@
 
     <Page.Resources>
         <converter:SelectedRangeToBrushConverter x:Key="RangeToBrushConverter"/>
+        <converter:FormatPrice x:Key="CurrencyConverter"/>
     </Page.Resources>
 
     <ScrollViewer Padding="20">
@@ -35,26 +36,26 @@
                     CornerRadius="12" Padding="20" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                     <StackPanel>
                         <TextBlock Text="Tổng sản phẩm" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}"/>
-                        <TextBlock Text="142" FontSize="28" FontWeight="Bold" Margin="0,5"/>
-                        <TextBlock Text="▲ +5 so với hôm qua" Foreground="Green" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <TextBlock Text="{x:Bind ViewModel.TotalProducts, Mode=OneWay}" FontSize="28" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock Text="▲ Xem chi tiết trong kho" Foreground="Green" Style="{StaticResource CaptionTextBlockStyle}"/>
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="1" Background="{ThemeResource LayerFillColorDefaultBrush}" 
                     CornerRadius="12" Padding="20" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                     <StackPanel>
-                        <TextBlock Text="Đơn hàng hôm nay" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}"/>
-                        <TextBlock Text="86" FontSize="28" FontWeight="Bold" Margin="0,5"/>
-                        <TextBlock Text="▲ +12% so với hôm qua" Foreground="Green" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <TextBlock Text="Đơn hàng" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <TextBlock Text="{x:Bind ViewModel.TotalBills, Mode=OneWay}" FontSize="28" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock Text="▲ Theo thời gian đã chọn" Foreground="Green" Style="{StaticResource CaptionTextBlockStyle}"/>
                     </StackPanel>
                 </Border>
                 
                 <Border Grid.Column="2" Background="{ThemeResource LayerFillColorDefaultBrush}" 
                     CornerRadius="12" Padding="20" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                     <StackPanel>
-                        <TextBlock Text="Doanh thu hôm nay" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}"/>
-                        <TextBlock Text="142" FontSize="28" FontWeight="Bold" Margin="0,5"/>
-                        <TextBlock Text="▲ +15.4% so với hôm qua" Foreground="Green" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <TextBlock Text="Doanh thu" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <TextBlock Text="{x:Bind ViewModel.TotalRevenue, Mode=OneWay, Converter={StaticResource CurrencyConverter}}" FontSize="28" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock Text="▲ Theo thời gian đã chọn" Foreground="Green" Style="{StaticResource CaptionTextBlockStyle}"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -135,7 +136,7 @@
                                         <!-- Tên và giá sản phẩm -->
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="{x:Bind product.Name}" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{x:Bind product.Price, Mode=OneWay}" Foreground="Gray" FontSize="12"/>
+                                            <TextBlock Text="{x:Bind product.Price, Mode=OneWay, Converter={StaticResource CurrencyConverter}}" Foreground="Gray" FontSize="12"/>
                                         </StackPanel>
 
                                         <!-- Tổng số lượt bán -->
@@ -154,60 +155,35 @@
                     <StackPanel>
                         <TextBlock Text="Sắp hết hàng" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                        <ListView SelectionMode="None" Padding="0">
-                            <ListViewItem HorizontalContentAlignment="Stretch" Padding="0,8">
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <FontIcon Grid.Column="0" Glyph="&#xE7BA;" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
-
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="Sữa đặc Ngôi Sao" FontWeight="Medium" FontSize="14"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="Tồn: " FontSize="12" Foreground="Gray"/>
-                                            <TextBlock Text="5 Hộp" FontSize="12" Foreground="Orange" FontWeight="SemiBold"/>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <Button Grid.Column="2" Content="Nhập hàng" 
-                                        Padding="8,2" FontSize="11"
-                                        Background="Transparent" BorderThickness="0"
-                                        Foreground="{ThemeResource SystemAccentColor}"/>
-                                </Grid>
-                            </ListViewItem>
-
-                            <MenuFlyoutSeparator/>
-                            
-                                <ListViewItem HorizontalContentAlignment="Stretch" Padding="0,8">
-                                    <Grid ColumnSpacing="12">
+                        <ListView SelectionMode="None" Padding="0" ItemsSource="{x:Bind ViewModel.LowStockProducts, Mode=OneWay}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Product">
+                                    <Grid ColumnSpacing="12" Padding="0,8">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="0" Glyph="&#xE7BA;" FontSize="16" Foreground="Gray"/>
-                                        <StackPanel Grid.Column="1">
-                                            <TextBlock Text="Hạt Cà Phê Robusta" FontWeight="Medium" FontSize="14"/>
-                                            <TextBlock Text="Tồn: 2 Kg" FontSize="12" Foreground="Orange"/>
+                                        
+                                        <FontIcon Grid.Column="0" Glyph="&#xE7BA;" FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind Name}" FontWeight="Medium" FontSize="14"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Tồn: " FontSize="12" Foreground="Gray"/>
+                                                <TextBlock Text="{x:Bind Unit, Mode=OneWay}" FontSize="12" Foreground="Orange" FontWeight="SemiBold"/>
+                                                <TextBlock Text=" Đv" FontSize="12" Foreground="Orange" FontWeight="SemiBold"/>
+                                            </StackPanel>
                                         </StackPanel>
-                                        <Button Grid.Column="2" Content="Nhập hàng" Padding="8,2" FontSize="11" Background="Transparent" Foreground="{ThemeResource SystemAccentColor}"/>
+
+                                        <Button Grid.Column="2" Content="Nhập hàng" 
+                                            Padding="8,2" FontSize="11"
+                                            Background="Transparent" BorderThickness="0"
+                                            Foreground="{ThemeResource SystemAccentColor}"
+                                            VerticalAlignment="Center"/>
                                     </Grid>
-                                </ListViewItem>
-
-                            <MenuFlyoutSeparator/>
-
-                            <ListViewItem HorizontalContentAlignment="Center" Margin="0,10,0,0">
-                                <Button Background="Transparent" BorderThickness="1" BorderBrush="#DDD" CornerRadius="20" Padding="20,5">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <SymbolIcon Symbol="Street" />
-                                        <TextBlock Text="Xem danh sách kho" FontSize="12"/>
-                                    </StackPanel>
-                                </Button>
-                            </ListViewItem>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
                         </ListView>
                     </StackPanel>
                 </Border>
@@ -252,7 +228,7 @@
 
                                             <!-- Total Amount -->
                                             <TextBlock Grid.Row="1" 
-                                                       Text="{x:Bind TotalAmount}" 
+                                                       Text="{x:Bind TotalAmount, Converter={StaticResource CurrencyConverter}}" 
                                                        FontSize="18" FontWeight="Bold" Margin="0,8,0,0"/>
 
                                             <!-- Time Ago -->
