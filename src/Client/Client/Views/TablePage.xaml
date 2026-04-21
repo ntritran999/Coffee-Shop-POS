@@ -80,7 +80,7 @@
                     </Border>
                 </Grid>
             </SplitView.Pane>
-            <Grid RowSpacing="20" Margin="36" Padding="16" Background="#fbfaf8">
+            <Grid RowSpacing="20" Margin="36" Padding="16" Background="#faf9f7">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -92,19 +92,19 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="16">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="16">
                             <FontIcon Glyph="&#xF0E2;" />
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="Sơ đồ bàn" FontWeight="Bold" FontSize="24"/>
+                                <TextBlock Text="Sơ đồ bàn" Style="{StaticResource TitleTextBlockStyle}"/>
                                 <TextBlock Text="Tổng quan trạng thái chỗ ngồi" FontWeight="Light" FontSize="12"/>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Button CornerRadius="12" Content="Tât cả"/>
+                            <Button CornerRadius="12" Content="Tất cả"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="5">
-                        <Button Click="AddTable_Click" IsEnabled="{x:Bind Negate(ViewModel.LoadCommand.IsRunning), Mode=OneWay}">
+                        <Button Click="AddTable_Click" IsEnabled="{x:Bind Negate(ViewModel.LoadCommand.IsRunning), Mode=OneWay}" Background="#D97724" Foreground="White">
                             <StackPanel Orientation="Horizontal" Spacing="8" Padding="10">
                                 <FontIcon Glyph="&#xE710;" FontSize="16"/>
                                 <TextBlock Text="Thêm bàn" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -119,22 +119,22 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16" Margin="30, 0, 0, 0">
-                            <TextBlock Text="Bàn trống(">
+                            <TextBlock Text="Bàn trống(" Foreground="{StaticResource TextFillColorSecondary}">
                     <Run Text="{x:Bind ViewModel.NumEmpty, Mode=OneWay}"/><Run Text=")"/>
                             </TextBlock>
-                            <TextBlock Text="Đang phục vụ(">
+                            <TextBlock Text="Đang phục vụ(" Foreground="{StaticResource TextFillColorSecondary}">
                     <Run Text="{x:Bind ViewModel.NumServing, Mode=OneWay}"/><Run Text=")"/>
                             </TextBlock>
-                            <TextBlock Text="Đang dọn(">
+                            <TextBlock Text="Đang dọn(" Foreground="{StaticResource TextFillColorSecondary}">
                     <Run Text="{x:Bind ViewModel.NumCleaning, Mode=OneWay}"/><Run Text=")"/>
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="1">
-                            <TextBlock Text="|"/>
+                            <TextBlock Text="|" Foreground="{StaticResource TextFillColorSecondary}"/>
                             <TextBlock>
-                    <Run Text="Tổng số: "/>
-                    <Run Text="{x:Bind ViewModel.Tables.Count, Mode=OneWay}"/>
-                    <Run Text="bàn"/>
+                    <Run Text="Tổng số: " Foreground="{StaticResource TextFillColorSecondary}"/>
+                    <Run Text="{x:Bind ViewModel.Tables.Count, Mode=OneWay}" FontWeight="Bold"/>
+                    <Run Text="bàn" FontWeight="Bold"/>
                             </TextBlock>
                         </StackPanel>
                     </Grid>
@@ -144,25 +144,26 @@
               ItemsSource="{x:Bind ViewModel.Tables, Mode=OneWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Border Width="200" Height="300" Background="White" CornerRadius="12">
-                                <Grid Padding="12">
+                            <Border Width="200" Height="300" Background="{ThemeResource CardBackgroundFillColorDefault}"  CornerRadius="12" Padding="16"
+                                    BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <Grid RowSpacing="16">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Orientation="Vertical" >
-                                        <Grid  Margin="0, 0, 0, 16">
+                                    <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="16">
+                                        <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{Binding TableName}" FontWeight="Bold" FontSize="24"/>
                                             <Button Click="EditTable_Click" Grid.Column="1"
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        Padding="0"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center">
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Padding="0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
                                                 <FontIcon Glyph="&#xE713;" />
                                             </Button>
                                         </Grid>
@@ -173,7 +174,8 @@
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
-                                    <Button Click="ViewBills_Click" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                    <Button Click="ViewBills_Click" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                                                Background="#D97724" Foreground="White">
                                         <TextBlock Text="Xem đơn" FontSize="20"/>
                                     </Button>
                                 </Grid>
