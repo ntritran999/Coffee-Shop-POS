@@ -53,19 +53,23 @@
                                            Foreground="Gray" FontSize="13" Margin="22,4,0,0"/>
                             </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <StackPanel Name="ItemsPerPageBtnPanel" Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <Button Content="5" Padding="16,8" CornerRadius="8" MinWidth="44"
                                         Command="{x:Bind ViewModel.SetItemsPerPageCommand}" CommandParameter="5"
-                                        Background="Transparent"/>
+                                        Background="Transparent"
+                                        Click="ItemsPerPage_Click"/>
                                 <Button Content="10" Padding="16,8" CornerRadius="8" MinWidth="44"
                                         Command="{x:Bind ViewModel.SetItemsPerPageCommand}" CommandParameter="10"
-                                        Background="#D97724" Foreground="White"/>
+                                        Background="Transparent"
+                                        Click="ItemsPerPage_Click"/>
                                 <Button Content="15" Padding="16,8" CornerRadius="8" MinWidth="44"
                                         Command="{x:Bind ViewModel.SetItemsPerPageCommand}" CommandParameter="15"
-                                        Background="Transparent"/>
+                                        Background="Transparent"
+                                        Click="ItemsPerPage_Click"/>
                                 <Button Content="20" Padding="16,8" CornerRadius="8" MinWidth="44"
                                         Command="{x:Bind ViewModel.SetItemsPerPageCommand}" CommandParameter="20"
-                                        Background="Transparent"/>
+                                        Background="Transparent"
+                                        Click="ItemsPerPage_Click"/>
                             </StackPanel>
                         </Grid>
 
