@@ -9,8 +9,8 @@ namespace Client.ViewModels
     public partial class SettingsViewModel : ObservableObject
     {
         // Display settings
-        [ObservableProperty] private int _itemsPerPage = 10;
-        [ObservableProperty] private bool _rememberLastScreen = true;
+        [ObservableProperty] private int _itemsPerPage;
+        [ObservableProperty] private bool _rememberLastScreen;
 
         // Connection settings
         [ObservableProperty] private string _serverHost;
@@ -30,6 +30,8 @@ namespace Client.ViewModels
 
         private void LoadSettings()
         {
+            ItemsPerPage = LocalSettingsHelper.GetItemsPerPage();
+            RememberLastScreen = LocalSettingsHelper.GetRememberLastScreen();
             ServerHost = LocalSettingsHelper.GetServerHost();
             ServerPort = LocalSettingsHelper.GetServerPort();
         }
@@ -60,11 +62,11 @@ namespace Client.ViewModels
         private void SaveSettings()
         {
             // Lưu vào LocalSettings
+            LocalSettingsHelper.SaveSettings(ItemsPerPage, RememberLastScreen);
             LocalSettingsHelper.SaveServerConfig(ServerHost, ServerPort);
 
             LastUpdated = $"Lần cập nhật cuối: {DateTime.Now:dd/MM/yyyy - HH:mm}";
             ConnectionStatus = "Đã lưu cấu hình!";
-            AppInstance.Restart("");
         }
 
         [RelayCommand]

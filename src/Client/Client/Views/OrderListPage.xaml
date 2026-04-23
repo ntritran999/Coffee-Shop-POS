@@ -389,7 +389,9 @@
 
                                 <StackPanel Grid.Column="2" Orientation="Horizontal"
                             Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="Số dòng mỗi trang: 8" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Số đơn mỗi trang: " VerticalAlignment="Center">
+                                        <Run Text="{x:Bind ViewModel.TotalLines, Mode=OneWay}"/>
+                                    </TextBlock>
                                 </StackPanel>
                             </Grid>
                         </Border>

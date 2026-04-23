@@ -30,8 +30,8 @@ namespace Client.ViewModels
         {
             if (IsRememberMe && !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password))
             {
-                // Tạo độ trễ (delay) khoảng 800 mili-giây. 
-                await Task.Delay(800);
+                // Tạo độ trễ (delay) khoảng 100 mili-giây. 
+                await Task.Delay(100);
 
                 // Gọi command đăng nhập
                 await LoginAsync();

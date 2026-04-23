@@ -1,4 +1,5 @@
-﻿using Client.Models;
+﻿using Client.Helpers;
+using Client.Models;
 using Client.Services;
 using Client.Views.Forms;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -78,7 +79,7 @@ namespace Client.ViewModels
         public bool CanGoNextPage => CurrentPage < TotalPages;
         public string PageInfo => $"Trang {CurrentPage}/{TotalPages}";
 
-        public int PageSize { get; set; } = 8;
+        public int PageSize { get; set; } = LocalSettingsHelper.GetItemsPerPage();
 
         private string _searchKeyword = string.Empty;
         private int? _minPrice;

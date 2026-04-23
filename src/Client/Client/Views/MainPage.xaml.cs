@@ -1,4 +1,6 @@
+using Client.Helpers;
 using Client.Services;
+using HarfBuzzSharp;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -9,6 +11,7 @@ namespace Client.Views
 {
     public sealed partial class MainPage : Page
     {
+        private readonly string lastScreenSavingPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "POSClientSettings", "lastscreen.txt");
         private readonly Dictionary<string, (Type pageType, string title)> _pageMap = new()
         {
             { "ReportPage",  (typeof(ReportPage),  "Báo cáo Kinh doanh") },
@@ -29,7 +32,14 @@ namespace Client.Views
             {
                 NavAccountPage.Visibility = Visibility.Collapsed;
             }
-            contentFrame.Navigate(typeof(DashboardPage));
+            if (_pageMap.TryGetValue(LoadLastScreen(), out var entry))
+            {
+                contentFrame.Navigate(entry.pageType);
+            }
+            else
+            {
+                contentFrame.Navigate(typeof(DashboardPage));
+            }
         }
 
         private void navigation_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -40,6 +50,7 @@ namespace Client.Views
                 if (contentFrame.CurrentSourcePageType != entry.pageType)
                 {
                     contentFrame.Navigate(entry.pageType);
+                    SaveLastScreen(tag);
                 }
                 HeaderTitle.Text = entry.title;
             }
@@ -48,6 +59,20 @@ namespace Client.Views
         private void NavLogoutItem_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             PerformLogout();
+        }
+
+        private string LoadLastScreen()
+        {
+            if (!LocalSettingsHelper.GetRememberLastScreen() || !File.Exists(lastScreenSavingPath)) return "";
+
+            return File.ReadAllText(lastScreenSavingPath);
+        }
+        private void SaveLastScreen(string pageTag)
+        {
+            if (LocalSettingsHelper.GetRememberLastScreen())
+            {
+                File.WriteAllText(lastScreenSavingPath, pageTag);
+            }
         }
 
         private void PerformLogout()

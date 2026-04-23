@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -10,7 +11,15 @@ namespace Client.Helpers
     public static class LocalSettingsHelper
     {
         private static readonly string SettingsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "POSClientSettings");
-        private static readonly string SettingsFile = Path.Combine(SettingsFolder, "serverconfig.json");
+        private static readonly string ServerSettingsFile = Path.Combine(SettingsFolder, "serverconfig.json");
+        private static readonly string SettingsFile = Path.Combine(SettingsFolder, "settings.json");
+
+        
+        private class SettingConfig
+        {
+            public int ItemsPerPage { get; set; } = 5;
+            public bool RememberLastScreen { get; set; } = false;
+        }
 
         private class ServerConfig
         {
@@ -18,11 +27,35 @@ namespace Client.Helpers
             public string Port { get; set; } = "5000";
         }
 
-        private static ServerConfig GetConfig()
+        private static SettingConfig GetSettings()
         {
             if (File.Exists(SettingsFile))
             {
                 string json = File.ReadAllText(SettingsFile);
+                return JsonSerializer.Deserialize<SettingConfig>(json) ?? new();
+            }
+            return new();
+        }
+
+        public static int GetItemsPerPage() => GetSettings().ItemsPerPage;
+        public static bool GetRememberLastScreen() => GetSettings().RememberLastScreen;
+
+        public static void SaveSettings(int itemsPergPage, bool rememberLastScreen)
+        {
+            if (!Directory.Exists(SettingsFolder))
+            {
+                Directory.CreateDirectory(SettingsFolder);
+            }
+
+            var config = new SettingConfig { ItemsPerPage = itemsPergPage, RememberLastScreen = rememberLastScreen };
+            File.WriteAllText(SettingsFile, JsonSerializer.Serialize(config));
+        }
+
+        private static ServerConfig GetConfig()
+        {
+            if (File.Exists(ServerSettingsFile))
+            {
+                string json = File.ReadAllText(ServerSettingsFile);
                 return JsonSerializer.Deserialize<ServerConfig>(json) ?? new ServerConfig();
             }
             return new ServerConfig();
@@ -39,7 +72,7 @@ namespace Client.Helpers
             }
 
             var config = new ServerConfig { Host = host, Port = port };
-            File.WriteAllText(SettingsFile, JsonSerializer.Serialize(config));
+            File.WriteAllText(ServerSettingsFile, JsonSerializer.Serialize(config));
         }
 
         public static string GetGraphQLEndpoint(string host, string port)
@@ -90,6 +123,7 @@ namespace Client.Helpers
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Exception: {ex}");
                 return (false, $"Không thể kết nối. Kiểm tra lại IP/Port.");
             }
         }
