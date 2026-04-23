@@ -136,6 +136,7 @@ namespace Client.Views
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.ActiveWindow);
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
+            picker.FileTypeFilter.Add(".csv");
             picker.FileTypeFilter.Add(".xlsx");
             picker.FileTypeFilter.Add(".xls");
             picker.FileTypeFilter.Add(".accdb");

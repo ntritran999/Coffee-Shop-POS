@@ -1,18 +1,8 @@
 using Client.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage.Pickers;
 
 namespace Client.Views.Forms
@@ -68,9 +58,11 @@ namespace Client.Views.Forms
                 return;
             }
 
-            ImageBox.Text = file.Path;
+            var current = ImageBox.Text?.Trim() ?? string.Empty;
+            ImageBox.Text = string.IsNullOrWhiteSpace(current) ? file.Path : $"{current};{file.Path}";
+
             Product ??= new Product();
-            Product.Image = file.Path;
+            Product.Image = ImageBox.Text;
             ValidationErrorText.Text = string.Empty;
             ValidationErrorText.Visibility = Visibility.Collapsed;
         }
@@ -82,12 +74,19 @@ namespace Client.Views.Forms
             Product.Name = NameBox.Text?.Trim() ?? string.Empty;
             Product.Image = ImageBox.Text?.Trim() ?? string.Empty;
 
-            if (!int.TryParse(PriceBox.Text, out var price))
+            if (string.IsNullOrWhiteSpace(Product.Name))
             {
-                price = 0;
+                ShowValidationError("Tên sản phẩm không được để trống.");
+                args.Cancel = true;
+                return;
             }
 
-            Product.Price = price;
+            if (!int.TryParse(PriceBox.Text, out var price) || price < 0)
+            {
+                ShowValidationError("Giá phải là số nguyên lớn hơn hoặc bằng 0.");
+                args.Cancel = true;
+                return;
+            }
 
             if (!int.TryParse(UnitBox.Text, out var unit) || unit <= 0)
             {
@@ -103,22 +102,43 @@ namespace Client.Views.Forms
                 return;
             }
 
-            var imageInput = Product.Image;
-            var validImageInput = !string.IsNullOrWhiteSpace(imageInput)
-                && (File.Exists(imageInput)
-                    || (Uri.TryCreate(imageInput, UriKind.Absolute, out var uri)
-                        && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
-                    || imageInput.StartsWith("/"));
+            var imageParts = Product.Image
+                .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            if (!validImageInput)
+            if (imageParts.Length == 0)
             {
-                ShowValidationError("Image không hợp lệ. Nhập URL, đường dẫn bắt đầu bằng '/', hoặc đường dẫn file ảnh local tồn tại.");
+                ShowValidationError("Phải nhập ít nhất 1 ảnh.");
                 args.Cancel = true;
                 return;
             }
 
+            if (imageParts.Length > 3)
+            {
+                ShowValidationError("Chỉ được tối đa 3 ảnh, phân tách bằng dấu ';'.");
+                args.Cancel = true;
+                return;
+            }
+
+            foreach (var imageInput in imageParts)
+            {
+                var validImageInput = File.Exists(imageInput)
+                    || (Uri.TryCreate(imageInput, UriKind.Absolute, out var uri)
+                        && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+                    || imageInput.StartsWith("/");
+
+                if (!validImageInput)
+                {
+                    ShowValidationError($"Image không hợp lệ: {imageInput}");
+                    args.Cancel = true;
+                    return;
+                }
+            }
+
+            Product.Price = price;
             Product.Unit = unit;
             Product.CategoryID = categoryId;
+            Product.Image = string.Join(';', imageParts);
+
             ValidationErrorText.Text = string.Empty;
             ValidationErrorText.Visibility = Visibility.Collapsed;
         }

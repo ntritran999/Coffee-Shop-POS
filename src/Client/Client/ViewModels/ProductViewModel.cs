@@ -19,11 +19,27 @@ namespace Client.ViewModels
     {
         public ObservableCollection<Product> Products { get; } = new();
         public ObservableCollection<Product> PagedProducts { get; } = new();
+        public ObservableCollection<string> SelectedProductImages { get; } = new();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasSelected))]
         [NotifyPropertyChangedFor(nameof(NoSelected))]
         private Product? _selectedProduct;
+
+        partial void OnSelectedProductChanged(Product? value)
+        {
+            SelectedProductImages.Clear();
+
+            if (value == null)
+            {
+                return;
+            }
+
+            foreach (var image in SplitImageLinks(value.Image))
+            {
+                SelectedProductImages.Add(image);
+            }
+        }
 
         private int _currentPage = 1;
         public int CurrentPage
@@ -376,12 +392,17 @@ namespace Client.ViewModels
         private static DataTable LoadDataTable(string filePath)
         {
             var extension = Path.GetExtension(filePath).ToLowerInvariant();
+            if (extension == ".csv")
+            {
+                return LoadCsvDataTable(filePath);
+            }
+
             var connectionString = extension switch
             {
                 ".xlsx" => $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={filePath};Extended Properties='Excel 12.0 Xml;HDR=YES;IMEX=1';",
                 ".xls" => $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={filePath};Extended Properties='Excel 8.0;HDR=YES;IMEX=1';",
                 ".accdb" or ".mdb" => $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={filePath};Persist Security Info=False;",
-                _ => throw new InvalidOperationException("Định dạng file không được hỗ trợ. Chỉ hỗ trợ Excel (.xls, .xlsx) hoặc Access (.mdb, .accdb).")
+                _ => throw new InvalidOperationException("Định dạng file không được hỗ trợ. Chỉ hỗ trợ CSV (.csv), Excel (.xls, .xlsx) hoặc Access (.mdb, .accdb).")
             };
 
             using var connection = new OleDbConnection(connectionString);
@@ -443,30 +464,167 @@ namespace Client.ViewModels
             return null;
         }
 
+        private static DataTable LoadCsvDataTable(string filePath)
+        {
+            var lines = File.ReadAllLines(filePath)
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .ToList();
+
+            if (lines.Count == 0)
+            {
+                throw new InvalidOperationException("File CSV không có dữ liệu.");
+            }
+
+            var firstRow = ParseCsvLine(lines[0]);
+            var hasHeader = LooksLikeHeader(firstRow);
+            var table = new DataTable();
+
+            if (hasHeader)
+            {
+                for (var i = 0; i < firstRow.Count; i++)
+                {
+                    var header = firstRow[i]?.Trim();
+                    if (string.IsNullOrWhiteSpace(header))
+                    {
+                        header = $"Column{i + 1}";
+                    }
+
+                    header = EnsureUniqueColumnName(table, header);
+                    table.Columns.Add(header);
+                }
+            }
+            else
+            {
+                for (var i = 0; i < firstRow.Count; i++)
+                {
+                    table.Columns.Add($"Column{i + 1}");
+                }
+
+                AddCsvRow(table, firstRow);
+            }
+
+            var startIndex = hasHeader ? 1 : 1;
+            for (var i = startIndex; i < lines.Count; i++)
+            {
+                var values = ParseCsvLine(lines[i]);
+                AddCsvRow(table, values);
+            }
+
+            return table;
+        }
+
+        private static void AddCsvRow(DataTable table, IReadOnlyList<string> values)
+        {
+            var row = table.NewRow();
+            for (var i = 0; i < table.Columns.Count; i++)
+            {
+                row[i] = i < values.Count ? values[i] : string.Empty;
+            }
+
+            table.Rows.Add(row);
+        }
+
+        private static string EnsureUniqueColumnName(DataTable table, string columnName)
+        {
+            var candidate = columnName;
+            var index = 1;
+            while (table.Columns.Contains(candidate))
+            {
+                candidate = $"{columnName}_{index}";
+                index++;
+            }
+
+            return candidate;
+        }
+
+        private static bool LooksLikeHeader(IReadOnlyList<string> values)
+        {
+            if (values.Count == 0)
+            {
+                return false;
+            }
+
+            var knownHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Name", "ProductName", "Tên sản phẩm",
+                "Price", "Giá",
+                "Unit", "Đơn vị",
+                "Category", "CategoryID", "CategoryId", "CategoryName", "Danh mục",
+                "Image", "ImageUrl", "Hình ảnh"
+            };
+
+            return values.Any(v => knownHeaders.Contains(v?.Trim() ?? string.Empty));
+        }
+
+        private static List<string> ParseCsvLine(string line)
+        {
+            var values = new List<string>();
+            if (line == null)
+            {
+                return values;
+            }
+
+            var current = string.Empty;
+            var inQuotes = false;
+
+            for (var i = 0; i < line.Length; i++)
+            {
+                var c = line[i];
+                if (c == '"')
+                {
+                    if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                    {
+                        current += '"';
+                        i++;
+                    }
+                    else
+                    {
+                        inQuotes = !inQuotes;
+                    }
+
+                    continue;
+                }
+
+                if (c == ',' && !inQuotes)
+                {
+                    values.Add(current.Trim());
+                    current = string.Empty;
+                    continue;
+                }
+
+                current += c;
+            }
+
+            values.Add(current.Trim());
+            return values;
+        }
+
         private static Product ParseRowToProduct(DataRow row, IReadOnlyCollection<Category> categories)
         {
-            var name = GetValue(row, "Name", "ProductName", "Tên sản phẩm");
+            var name = GetValue(row, "Name", "ProductName", "Tên sản phẩm") ?? GetValueByIndex(row, 0);
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new InvalidOperationException("Một dòng dữ liệu không có tên sản phẩm.");
             }
 
-            var price = ParseInt(GetValue(row, "Price", "Giá"), "Giá sản phẩm không hợp lệ.");
+            var priceRaw = GetValue(row, "Price", "Giá") ?? GetValueByIndex(row, 1);
+            var price = ParseInt(priceRaw, "Giá sản phẩm không hợp lệ.");
             if (price < 0)
             {
                 throw new InvalidOperationException("Giá sản phẩm phải >= 0.");
             }
 
-            var unit = ParseIntOrDefault(GetValue(row, "Unit", "Đơn vị"), 1);
+            var unitRaw = GetValue(row, "Unit", "Đơn vị") ?? GetValueByIndex(row, 2);
+            var unit = ParseIntOrDefault(unitRaw, 1);
             if (unit <= 0)
             {
                 unit = 1;
             }
 
-            var categoryRaw = GetValue(row, "CategoryID", "CategoryId", "Category", "CategoryName", "Danh mục");
+            var categoryRaw = GetValue(row, "CategoryID", "CategoryId", "Category", "CategoryName", "Danh mục") ?? GetValueByIndex(row, 3);
             var categoryId = ResolveCategoryId(categoryRaw, categories);
 
-            var image = GetValue(row, "Image", "ImageUrl", "Hình ảnh") ?? string.Empty;
+            var image = GetValue(row, "Image", "ImageUrl", "Hình ảnh") ?? GetValueByIndex(row, 4) ?? string.Empty;
 
             return new Product
             {
@@ -534,6 +692,32 @@ namespace Client.ViewModels
             }
 
             return null;
+        }
+
+        private static string? GetValueByIndex(DataRow row, int index)
+        {
+            if (index < 0 || index >= row.Table.Columns.Count)
+            {
+                return null;
+            }
+
+            var value = row[index]?.ToString();
+            return string.IsNullOrWhiteSpace(value) ? null : value;
+        }
+
+        public static IReadOnlyList<string> SplitImageLinks(string? raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                return [];
+            }
+
+            return raw
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Select(link => link.Trim())
+                .Where(link => !string.IsNullOrWhiteSpace(link))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
         }
 
         private static async Task ShowErrorAsync(string message)
