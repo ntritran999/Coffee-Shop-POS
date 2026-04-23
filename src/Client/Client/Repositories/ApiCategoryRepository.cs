@@ -121,8 +121,8 @@ namespace Client.Repositories
 
         public async Task<Category> Add(Category item)
         {
-            var mutation = @"mutation($data: CreateCategoryInput!) {
-                                createCategory(data: $data) {
+            var mutation = @"mutation($categoryName: String!) {
+                                createCategory(CategoryName: $categoryName) {
                                     CategoryID
                                     CategoryName
                                 }
@@ -130,10 +130,7 @@ namespace Client.Repositories
 
             var variables = new
             {
-                data = new
-                {
-                    CategoryName = item.CategoryName,
-                }
+                categoryName = item.CategoryName,
             };
 
             var data = await SendAsync(mutation, variables, "createCategory").ConfigureAwait(false);

@@ -1,9 +1,7 @@
 ﻿using Client.Models;
 using Client.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Client.Services
@@ -24,6 +22,16 @@ namespace Client.Services
         public async Task<IEnumerable<Category>> GetAllCategories()
         {
             return await _category.GetAll();
+        }
+
+        public async Task<Category?> GetCategoryByName(string categoryName)
+        {
+            return await _category.GetByName(categoryName);
+        }
+
+        public async Task<Category> AddCategory(Category item)
+        {
+            return await _category.Add(item);
         }
     }
 }

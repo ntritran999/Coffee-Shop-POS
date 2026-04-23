@@ -3,7 +3,6 @@ using Client.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +21,6 @@ namespace Client.ViewModels
         public CategoryViewModel(CategoryService categoryService)
         {
             _categoryService = categoryService;
-            // Initialize default "Tất cả" category
             Categories.Add(new Category { CategoryID = 0, CategoryName = "Tất cả" });
             SelectedCategory = Categories.FirstOrDefault();
             _ = LoadCategories();
@@ -37,18 +35,13 @@ namespace Client.ViewModels
             try
             {
                 var data = await _categoryService.GetAllCategories();
-                
-                // Clear and reload with fresh data from API
                 Categories.Clear();
-                
-                // Add "Tất cả" category first
                 Categories.Add(new Category
                 {
                     CategoryID = 0,
                     CategoryName = "Tất cả"
                 });
 
-                // Add API data
                 foreach (var category in data)
                 {
                     Categories.Add(category);
@@ -59,13 +52,38 @@ namespace Client.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error loading categories: {ex.Message}");
-                // Keep the default "Tất cả" category even if loading fails
                 if (Categories.Count == 0)
                 {
                     Categories.Add(new Category { CategoryID = 0, CategoryName = "Tất cả" });
                     SelectedCategory = Categories.FirstOrDefault();
                 }
             }
+        }
+
+        public async Task<Category> AddCategory(string categoryName)
+        {
+            var normalizedName = categoryName?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(normalizedName))
+            {
+                throw new InvalidOperationException("Tên loại sản phẩm không được để trống.");
+            }
+
+            var existed = Categories.FirstOrDefault(c =>
+                !string.IsNullOrWhiteSpace(c.CategoryName)
+                && c.CategoryName.Equals(normalizedName, StringComparison.OrdinalIgnoreCase));
+
+            if (existed != null)
+            {
+                return existed;
+            }
+
+            var created = await _categoryService.AddCategory(new Category
+            {
+                CategoryName = normalizedName
+            });
+
+            Categories.Add(created);
+            return created;
         }
     }
 }

@@ -80,6 +80,10 @@ export const resolvers = {
       AuthMiddleware.requireRole(context, "Manager");
       return await AccountService.deleteAccount(args.Username);
     },
+    createCategory: async (parent: any, args: any, context: any, info: any) => {
+      AuthMiddleware.requireRole(context, "Manager");
+      return await CategoryService.createCategory(args.CategoryName);
+    },
     createProduct: async (parent: any, args: any, context: any, info: any) => {
       AuthMiddleware.requireRole(context, "Manager");
       return await ProductService.createProduct(args.data);

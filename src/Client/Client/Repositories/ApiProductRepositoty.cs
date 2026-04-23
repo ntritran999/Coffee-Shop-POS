@@ -66,14 +66,31 @@ namespace Client.Repositories
                 return imageValue;
             }
 
-            var normalized = imageValue.Trim();
+            var parts = imageValue
+                .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .ToList();
 
-            if (File.Exists(normalized))
+            if (parts.Count == 0)
             {
-                return await _imageUploadClient.UploadAsync(normalized).ConfigureAwait(false);
+                return string.Empty;
             }
 
-            return normalized;
+            var resolvedLinks = new List<string>(parts.Count);
+            foreach (var part in parts)
+            {
+                if (File.Exists(part))
+                {
+                    var uploadedUrl = await _imageUploadClient.UploadAsync(part).ConfigureAwait(false);
+                    resolvedLinks.Add(uploadedUrl);
+                }
+                else
+                {
+                    resolvedLinks.Add(part);
+                }
+            }
+
+            return string.Join(';', resolvedLinks);
         }
 
         public async Task<IEnumerable<Product>> GetAll()
