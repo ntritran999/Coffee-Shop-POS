@@ -250,7 +250,7 @@ namespace Client.ViewModels
             };
 
             var dlg = new ProductForm();
-            dlg.SetProduct(newProduct, isEdit: false);
+            await dlg.SetProduct(newProduct, isEdit: false);
             var result = await dlg.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
@@ -286,7 +286,7 @@ namespace Client.ViewModels
             }
 
             var dlg = new ProductForm();
-            dlg.SetProduct(SelectedProduct, isEdit: true);
+            await dlg.SetProduct(SelectedProduct, isEdit: true);
             var result = await dlg.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {

@@ -1,8 +1,13 @@
 using Client.Models;
+using Client.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 
 namespace Client.Views.Forms
@@ -11,13 +16,23 @@ namespace Client.Views.Forms
     {
         public Product? Product { get; set; } = null;
 
+        private readonly CategoryService _categoryService;
+        public ObservableCollection<Category> Categories { get; } = new();
+
+        private ComboBox? CategorySelector => FindName("CategoryComboBox") as ComboBox;
+
         public ProductForm()
         {
             XamlRoot = App.ActiveWindow!.Content.XamlRoot;
             InitializeComponent();
+            _categoryService = App.Services?.GetService<CategoryService>() ?? new CategoryService();
+            if (CategorySelector != null)
+            {
+                CategorySelector.ItemsSource = Categories;
+            }
         }
 
-        public void SetProduct(Product? product, bool isEdit)
+        public async Task SetProduct(Product? product, bool isEdit)
         {
             if (product != null)
             {
@@ -32,11 +47,59 @@ namespace Client.Views.Forms
                 };
             }
 
+            await LoadCategoriesAsync();
+
+            var categorySelector = CategorySelector;
+            if (categorySelector != null)
+            {
+                if (Product != null)
+                {
+                    categorySelector.SelectedItem = Categories.FirstOrDefault(c => c.CategoryID == Product.CategoryID);
+                }
+
+                if (categorySelector.SelectedItem == null && Categories.Count > 0)
+                {
+                    categorySelector.SelectedIndex = 0;
+                    Product ??= new Product();
+                    Product.CategoryID = Categories[0].CategoryID;
+                }
+            }
+
             ValidationErrorText.Text = string.Empty;
             ValidationErrorText.Visibility = Visibility.Collapsed;
             DialogTitle.Text = isEdit ? "Sửa sản phẩm" : "Tạo sản phẩm";
             PrimaryButtonText = isEdit ? "Lưu" : "Tạo";
             SecondaryButtonText = "Hủy";
+        }
+
+        private async Task LoadCategoriesAsync()
+        {
+            Categories.Clear();
+
+            try
+            {
+                var categories = await _categoryService.GetAllCategories();
+                foreach (var category in categories.Where(c => c.CategoryID > 0))
+                {
+                    Categories.Add(category);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is not ComboBox comboBox || comboBox.SelectedItem is not Category selectedCategory)
+            {
+                return;
+            }
+
+            Product ??= new Product();
+            Product.CategoryID = selectedCategory.CategoryID;
+            ValidationErrorText.Text = string.Empty;
+            ValidationErrorText.Visibility = Visibility.Collapsed;
         }
 
         private async void PickImageButton_Click(object sender, RoutedEventArgs e)
@@ -95,9 +158,10 @@ namespace Client.Views.Forms
                 return;
             }
 
-            if (!int.TryParse(CategoryID.Text, out var categoryId) || categoryId <= 0)
+            var categorySelector = CategorySelector;
+            if (categorySelector?.SelectedItem is not Category selectedCategory || selectedCategory.CategoryID <= 0)
             {
-                ShowValidationError("Category phải là số nguyên lớn hơn 0.");
+                ShowValidationError("Vui lòng chọn Category hợp lệ.");
                 args.Cancel = true;
                 return;
             }
@@ -136,7 +200,7 @@ namespace Client.Views.Forms
 
             Product.Price = price;
             Product.Unit = unit;
-            Product.CategoryID = categoryId;
+            Product.CategoryID = selectedCategory.CategoryID;
             Product.Image = string.Join(';', imageParts);
 
             ValidationErrorText.Text = string.Empty;
