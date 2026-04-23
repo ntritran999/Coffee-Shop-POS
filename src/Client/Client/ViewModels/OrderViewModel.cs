@@ -1,4 +1,5 @@
-﻿using Client.Models;
+﻿using Client.Helpers;
+using Client.Models;
 using Client.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -71,7 +72,7 @@ namespace Client.ViewModels
 
         [ObservableProperty]
         public partial double TotalPages { get; set; } = 1;
-        public int TotalLines = 8;
+        public int TotalLines = LocalSettingsHelper.GetItemsPerPage();
 
         [ObservableProperty]
         public partial OrderLine SelectedOrderLine { get; set; }
