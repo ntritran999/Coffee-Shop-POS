@@ -2,6 +2,7 @@
 using Client.Services;
 using Client.Views.Forms;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -731,6 +732,12 @@ namespace Client.ViewModels
             };
 
             await errorDialog.ShowAsync();
+        }
+
+        [RelayCommand]
+        private void HideSelectedProduct()
+        {
+            SelectedProduct = null;
         }
     }
 }

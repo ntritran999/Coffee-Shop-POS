@@ -12,6 +12,7 @@
 
     <Page.Resources>
         <converter:FormatPrice x:Key="FormattedPrice"/>
+        <converter:FirstImageLinkConverter x:Key="FirstImageLinkConverter"/>
     </Page.Resources>
     
     <Grid Margin="36" Background="#fbfaf8">
@@ -85,7 +86,7 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Image Grid.Row="0" Source="{Binding Image}" Stretch="UniformToFill"/>
+                                <Image Grid.Row="0" Source="{Binding Image, Converter={StaticResource FirstImageLinkConverter}}" Stretch="UniformToFill"/>
                                 <StackPanel Orientation="Vertical" Grid.Row="1" Padding="10,5,10,5" Spacing="8">
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap"/>
                                     <TextBlock Text="{Binding Price, Converter={StaticResource FormattedPrice}}" Foreground="#D97724" FontWeight="Bold"/>
