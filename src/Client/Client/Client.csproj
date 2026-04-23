@@ -81,6 +81,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
     <PackageReference Include="Serilog" Version="4.3.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="System.Data.OleDb" Version="9.0.10" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\EditTableForm.xaml">
