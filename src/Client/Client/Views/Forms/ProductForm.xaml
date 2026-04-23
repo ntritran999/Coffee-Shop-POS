@@ -15,7 +15,7 @@
         <TextBox x:Name="NameBox" Header="Tên sản phẩm" Text="{x:Bind Product.Name, Mode=TwoWay}"/>
         <TextBox x:Name="PriceBox" Header="Giá" InputScope="Number" Text="{x:Bind Product.Price, Mode=TwoWay}"/>
         <TextBox x:Name="UnitBox" Header="Đơn vị" InputScope="Number" Text="{x:Bind Product.Unit, Mode=TwoWay}"/>
-        <TextBox x:Name="CategoryID" Header="Category" InputScope="Number" Text="{x:Bind Product.CategoryID, Mode=TwoWay}"/>
+        <ComboBox x:Name="CategoryComboBox" Header="Category" DisplayMemberPath="CategoryName" SelectionChanged="CategoryComboBox_SelectionChanged"/>
 
         <TextBlock Text="Ảnh (nhiều link cách nhau bằng ';' hoặc đường dẫn file)"/>
         <Grid ColumnSpacing="8">
