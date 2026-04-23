@@ -7,3 +7,11 @@ export async function getCategories() {
     }
   });
 }
+
+export async function createCategory(categoryName: string) {
+  return prisma.category.create({
+    data: {
+      CategoryName: categoryName
+    }
+  });
+}

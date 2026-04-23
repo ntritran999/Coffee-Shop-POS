@@ -138,6 +138,7 @@ export const typeDefs = `#graphql
     createAccount(Username: String!, Password: String!, DisplayName: String!, Role: String!): Account!
     updateAccount(Username: String!, updataData: UpdateAccountInput): Account!
     deleteAccount(Username: String!): DeleteResponse!
+    createCategory(CategoryName: String!): Category!
     createProduct(data: CreateProductInput!): Product!
     updateProduct(ProductID: Int!, data: UpdateProductInput!): Product!
     deleteProduct(ProductID: Int!): DeleteResponse!
