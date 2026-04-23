@@ -175,7 +175,7 @@
 	<PublishTrimmed>False</PublishTrimmed>
 
 	<WindowsPackageType Condition="'$(Configuration)' != 'Debug'">None</WindowsPackageType>
-	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+	<WindowsAppSDKSelfContained Condition="'$(Configuration)' != 'Debug'">true</WindowsAppSDKSelfContained>
 
 	<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
