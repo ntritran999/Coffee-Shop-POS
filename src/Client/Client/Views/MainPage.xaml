@@ -114,20 +114,11 @@
                         Spacing="16"
                         VerticalAlignment="Center">
 
-                        <AutoSuggestBox Width="260"
-                                PlaceholderText="Tìm kiếm nhanh..."
-                                QueryIcon="Find"
-                                VerticalAlignment="Center"/>
-
-                        <Button Background="Transparent" Padding="8" Margin="0, 0, 30, 0">
-                            <FontIcon Glyph="&#xE7F4;" FontSize="18"/>
-                        </Button>
-
                         <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                            <TextBlock Text="Quản lý Quán"
+                            <TextBlock Text="{x:Bind AccountName}"
                                FontWeight="SemiBold"
                                HorizontalAlignment="Right"/>
-                            <TextBlock Text="Admin"
+                            <TextBlock Text="{x:Bind AccountRole}"
                                FontSize="12"
                                Foreground="Gray"
                                HorizontalAlignment="Right"/>

@@ -25,6 +25,9 @@ namespace Client.Views
             { "ProductPage", (typeof(ViewProduct), "Sản phẩm") }
         };
 
+        public string AccountName = SessionManager.CurrentAccount!.DisplayName;
+        public string AccountRole = SessionManager.CurrentAccount!.Role;
+
         public MainPage()
         {
             InitializeComponent();
@@ -35,6 +38,7 @@ namespace Client.Views
             if (_pageMap.TryGetValue(LoadLastScreen(), out var entry))
             {
                 contentFrame.Navigate(entry.pageType);
+                HeaderTitle.Text = entry.title;
             }
             else
             {
