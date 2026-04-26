@@ -141,7 +141,7 @@ namespace Client.ViewModels
                     {
                         TotalInProgress++;
                     }
-                    if (order.DateCheckIn == DateTime.Today)
+                    if (order.DateCheckIn.Date == DateTime.Today)
                     {
                         TotalOrdersToday++;
                     }
