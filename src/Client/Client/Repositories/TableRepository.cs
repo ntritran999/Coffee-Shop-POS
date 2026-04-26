@@ -119,7 +119,11 @@ namespace Client.Repositories
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("", request);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null
+                };
+                var response = await _httpClient.PostAsJsonAsync("", request, options);
                 var result = await response.Content.ReadFromJsonAsync<GraphQLResponse<Dictionary<string, Table>>>();
 
                 if (result?.errors != null && result.errors.Count > 0)

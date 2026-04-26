@@ -18,8 +18,8 @@
             <Grid HorizontalAlignment="Left" Margin="0,10">
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <PersonPicture BadgeGlyph="&#xEA80;" Width="32" Height="32" VerticalAlignment="Top"/>
-                    <StackPanel>
-                        <Border Background="Black" CornerRadius="0,12,12,12" Padding="12,8">
+                    <StackPanel Spacing="4">
+                        <Border Background="#242424" CornerRadius="0,12,12,12" Padding="12,8">
                             <TextBlock Text="{x:Bind Text}" TextWrapping="Wrap" MaxWidth="400"/>
                         </Border>
                         <TextBlock Text="{x:Bind Time}" FontSize="10" Foreground="Gray"/>
@@ -30,7 +30,7 @@
 
         <DataTemplate x:Key="UserTemplate" x:DataType="models:ChatMessage">
             <Grid HorizontalAlignment="Right" Margin="0,10">
-                <StackPanel HorizontalAlignment="Right">
+                <StackPanel HorizontalAlignment="Right" Spacing="4">
                     <Border Background="#D35400" CornerRadius="12,0,12,12" Padding="12,8">
                         <TextBlock Text="{x:Bind Text}" Foreground="White" TextWrapping="Wrap" MaxWidth="400"/>
                     </Border>
@@ -66,6 +66,9 @@
                             </StackPanel>
                         </DataTemplate>
                     </Button.ContentTemplate>
+                    <Button.Resources>
+                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#80807f"/>
+                    </Button.Resources>
                 </Button>
                 <Button Content="Viết mô tả món" Background="Transparent" BorderThickness="0" Foreground="Gray" Click="BtnWriteDescription_Click">
                     <Button.ContentTemplate>
@@ -88,12 +91,12 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Padding="25,20" BorderBrush="Orange" BorderThickness="0,0,0,1" Background="OrangeRed">
+                <StackPanel Grid.Row="0" Padding="25,20" BorderBrush="Orange" BorderThickness="0,0,0,1" Background="#D97724" Spacing="8">
                     <StackPanel Orientation="Horizontal" Spacing="10">
-                        <FontIcon Glyph="&#xE8BD;" Foreground="#D35400"/>
+                        <FontIcon Glyph="&#xE8BD;" Foreground="#f9f5ef"/>
                         <TextBlock Text="Chat với Trợ lý AI" FontWeight="Bold"/>
                     </StackPanel>
-                    <TextBlock Text="Hỏi về doanh thu, chi phí hoặc dự báo xu hướng." FontSize="12" Foreground="White"/>
+                    <TextBlock Text="Hỏi về doanh thu, chi phí hoặc dự báo xu hướng." FontSize="12" Foreground="#f9f5ef"/>
                 </StackPanel>
 
                 <ListView x:Name="ChatList" Grid.Row="1" Padding="20"
@@ -113,14 +116,14 @@
                     <ProgressBar IsIndeterminate="True" Margin="0,0,0,10"
                                  Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <Border Background="White" CornerRadius="25" Padding="15,5">
-                        <Grid>
+                        <Grid ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBox x:Name="txtInput" PlaceholderText="Ví dụ: Phân tích doanh thu tuần qua..." 
                                      Text="{x:Bind ViewModel.InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     BorderThickness="0" Background="Transparent" VerticalAlignment="Center"
+                                     Background="Transparent" VerticalAlignment="Center"
                                      KeyDown="txtInput_KeyDown"
                                      />
                             <Button Grid.Column="1" Command="{x:Bind ViewModel.SendMessageCommand}"

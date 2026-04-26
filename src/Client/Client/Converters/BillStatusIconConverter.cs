@@ -15,8 +15,8 @@ namespace Client.Converters
 
             return status switch
             {
-                1 => "\uE890",
-                _ => "\uE70F",
+                0 => "\uE70F",
+                _ => "\uE890",
             };
         }
 
